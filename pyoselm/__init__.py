@@ -1,1 +1,4 @@
-__author__ = 'leeandro04'
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from pyoselm.core import *
