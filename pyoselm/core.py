@@ -881,3 +881,143 @@ class OSELMClassifier(OSELMRegressor):
     def score(self, X, y):
         """Force use of accuracy score since we don't inherit from ClassifierMixin"""
         return accuracy_score(y, self.predict(X))
+
+
+class OSELMClassifierSoftmax(OSELMClassifier):
+    """
+    ELMClassifier is a classifier based on the Extreme Learning Machine.
+
+    An Extreme Learning Machine (ELM) is a single layer feedforward
+    network with a random hidden layer components and ordinary linear
+    least squares fitting of the hidden->output weights by default.
+    [1][2]
+
+    ELMClassifier is an ELMRegressor subclass that first binarizes the
+    data, then uses the superclass to compute the decision function that
+    is then unbinarized to yield the prediction.
+
+    The params for the RandomLayer used in the input transform are
+    exposed in the ELMClassifier constructor.
+
+    Parameters
+    ----------
+    `n_hidden` : int, optional (default=20)
+        Number of units to generate in the SimpleRandomLayer
+
+    `activation_func` : {callable, string} optional (default='tanh')
+        Function used to transform input activation
+
+        It must be one of 'tanh', 'sine', 'tribas', 'inv_tribase', 'sigmoid',
+        'hardlim', 'softlim', 'gaussian', 'multiquadric', 'inv_multiquadric' or
+        a callable.  If none is given, 'tanh' will be used. If a callable
+        is given, it will be used to compute the hidden unit activations.
+
+    `activation_args` : dictionary, optional (default=None)
+        Supplies keyword arguments for a callable activation_func
+
+    `random_state`  : int, RandomState instance or None (default=None)
+        Control the pseudo random number generator used to generate the
+        hidden unit weights at fit time.
+
+    Attributes
+    ----------
+    `classes_` : numpy array of shape [n_classes]
+        Array of class labels
+
+    See Also
+    --------
+    RandomLayer, RBFRandomLayer, MLPRandomLayer,
+    GenELMRegressor, GenELMClassifier, ELMClassifier
+
+    References
+    ----------
+    .. [1] http://www.extreme-learning-machines.org
+    .. [2] G.-B. Huang, Q.-Y. Zhu and C.-K. Siew, "Extreme Learning Machine:
+          Theory and Applications", Neurocomputing, vol. 70, pp. 489-501,
+              2006.
+    """
+
+    def __init__(self, n_hidden=20, n_classes=None,
+                 activation_func='sigmoid', activation_args=None,
+                 random_state=123):
+
+        super(OSELMClassifierSoftmax, self).__init__(n_hidden=n_hidden,
+                                                     random_state=random_state,
+                                                     activation_func=activation_func,
+                                                     activation_args=activation_args)
+
+        self.binarizer = LabelBinarizer(0, 1)
+
+        if n_classes is not None:
+            self.classes_ = range(n_classes)
+            self.binarizer.fit(self.classes_)
+        else:
+            self.classes_ = None
+
+    def fit(self, X, y):
+        """
+        Fit the model using X, y as training data.
+
+        Parameters
+        ----------
+        X : {array-like, sparse matrix} of shape [n_samples, n_features]
+            Training vectors, where n_samples is the number of samples
+            and n_features is the number of features.
+
+        y : array-like of shape [n_samples, n_outputs]
+            Target values (class labels in classification, real numbers in
+            regression)
+
+        Returns
+        -------
+        self : object
+
+            Returns an instance of self.
+        """
+        if self.classes_ is None:
+            self.classes_ = np.unique(y)
+            y_bin = self.binarizer.fit_transform(y)
+        else:
+            y_bin = self.binarizer.transform(y)
+
+        super(OSELMClassifier, self).fit(X, y_bin)
+
+        return self
+
+    @staticmethod
+    def _softmax(p):
+        if not isinstance(p, np.ndarray):
+            p = np.asarray(p)
+
+        if len(p.shape) == 1:
+            p = np.expand_dims(p, axis=0)
+
+        max_p = np.max(p, axis=1)
+        exp_p = np.asarray([np.exp(p_i - max_p) for p_i in p.T]).T
+        sum_exp_p = np.sum(exp_p, axis=1, dtype=np.float64)
+        softmax_p = np.asarray([exp_p_i / sum_exp_p for exp_p_i in exp_p.T]).T
+        return softmax_p
+
+    def predict(self, X, get_proba=False):
+        """
+        Predict values using the model
+
+        Parameters
+        ----------
+        X : {array-like, sparse matrix} of shape [n_samples, n_features]
+
+        Returns
+        -------
+        C : numpy array of shape [n_samples, n_outputs]
+            Predicted values.
+        """
+        raw_predictions = self.decision_function(X)
+        class_predictions = self.binarizer.inverse_transform(raw_predictions)
+
+        if get_proba:
+            probs = self._softmax(raw_predictions)
+            result = class_predictions, probs
+        else:
+            result = class_predictions
+
+        return result
