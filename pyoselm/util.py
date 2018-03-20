@@ -82,8 +82,8 @@ class BaseRandomLayer(BaseEstimator, TransformerMixin):
 
         acts = self.input_activations_
 
-        if (callable(self.activation_func)):
-            args_dict = self.activation_args if (self.activation_args) else {}
+        if callable(self.activation_func):
+            args_dict = self.activation_args if self.activation_args else {}
             X_new = self.activation_func(acts, **args_dict)
         else:
             func_name = self.activation_func
@@ -134,7 +134,7 @@ class BaseRandomLayer(BaseEstimator, TransformerMixin):
         """
         X = check_array(X)
 
-        if (self.components_ is None):
+        if self.components_ is None:
             raise ValueError('No components initialized')
 
         return self._compute_hidden_activations(X)
@@ -219,35 +219,45 @@ class RandomLayer(BaseRandomLayer):
     --------
     """
     # triangular activation function
-    _tribas = (lambda x: np.clip(1.0 - np.fabs(x), 0.0, 1.0))
+    _tribas = lambda x: np.clip(1.0 - np.fabs(x), 0.0, 1.0)
 
     # inverse triangular activation function
-    _inv_tribas = (lambda x: np.clip(np.fabs(x), 0.0, 1.0))
+    _inv_tribas = lambda x: np.clip(np.fabs(x), 0.0, 1.0)
 
     # sigmoid activation function
-    _sigmoid = (lambda x: 1.0/(1.0 + np.exp(-x)))
+    _sigmoid = lambda x: 1.0/(1.0 + np.exp(-x))
 
     # hard limit activation function
-    _hardlim = (lambda x: np.array(x > 0.0, dtype=float))
+    _hardlim = lambda x: np.array(x > 0.0, dtype=float)
 
-    _softlim = (lambda x: np.clip(x, 0.0, 1.0))
+    _softlim = lambda x: np.clip(x, 0.0, 1.0)
+
+    # identity or linear activation function
+    _linear = lambda x: x
+
+    # ReLU
+    _relu = lambda x: max(0.0, x)
+
+    # Softplus activation function
+    _softplus = lambda x: np.log(1.0 + np.exp(x))
 
     # gaussian RBF
-    _gaussian = (lambda x: np.exp(-pow(x, 2.0)))
+    _gaussian = lambda x: np.exp(-pow(x, 2.0))
 
     # multiquadric RBF
-    _multiquadric = (lambda x:
-                     np.sqrt(1.0 + pow(x, 2.0)))
+    _multiquadric = lambda x: np.sqrt(1.0 + pow(x, 2.0))
 
     # inverse multiquadric RBF
-    _inv_multiquadric = (lambda x:
-                         1.0/(np.sqrt(1.0 + pow(x, 2.0))))
+    _inv_multiquadric = lambda x: 1.0/(np.sqrt(1.0 + pow(x, 2.0)))
 
     # internal activation function table
     _internal_activation_funcs = {'sine': np.sin,
                                   'tanh': np.tanh,
                                   'tribas': _tribas,
                                   'inv_tribas': _inv_tribas,
+                                  'linear': _linear,
+                                  'relu': _relu,
+                                  'softplus': _softplus,
                                   'sigmoid': _sigmoid,
                                   'softlim': _softlim,
                                   'hardlim': _hardlim,
@@ -265,9 +275,9 @@ class RandomLayer(BaseRandomLayer):
                                           activation_func=activation_func,
                                           activation_args=activation_args)
 
-        if (isinstance(self.activation_func, str)):
+        if isinstance(self.activation_func, str):
             func_names = self._internal_activation_funcs.keys()
-            if (self.activation_func not in func_names):
+            if self.activation_func not in func_names:
                 msg = "unknown activation function '%s'" % self.activation_func
                 raise ValueError(msg)
 
@@ -292,7 +302,7 @@ class RandomLayer(BaseRandomLayer):
         radii = self._get_user_components('radii')
 
         # compute radii
-        if (radii is None):
+        if radii is None:
             centers = self.components_['centers']
 
             n_centers = centers.shape[0]
@@ -309,10 +319,10 @@ class RandomLayer(BaseRandomLayer):
 
         # use points taken uniformly from the bounding
         # hyperrectangle
-        if (centers is None):
+        if centers is None:
             n_features = X.shape[1]
 
-            if (sparse):
+            if sparse:
                 fxr = xrange(n_features)
                 cols = [X.getcol(i) for i in fxr]
 
@@ -338,7 +348,7 @@ class RandomLayer(BaseRandomLayer):
 
         # use supplied biases if present
         biases = self._get_user_components('biases')
-        if (biases is None):
+        if biases is None:
             b_size = self.n_hidden
             biases = rs.normal(size=b_size)
 
@@ -349,7 +359,7 @@ class RandomLayer(BaseRandomLayer):
 
         # use supplied weights if present
         weights = self._get_user_components('weights')
-        if (weights is None):
+        if weights is None:
             n_features = X.shape[1]
             hw_size = (n_features, self.n_hidden)
             weights = rs.normal(size=hw_size)
@@ -360,11 +370,11 @@ class RandomLayer(BaseRandomLayer):
         """Generate components of hidden layer given X"""
 
         rs = check_random_state(self.random_state)
-        if (self._use_mlp_input):
+        if self._use_mlp_input:
             self._compute_biases(rs)
             self._compute_weights(X, rs)
 
-        if (self._use_rbf_input):
+        if self._use_rbf_input:
             self._compute_centers(X, sp.issparse(X), rs)
             self._compute_radii()
 
@@ -374,13 +384,13 @@ class RandomLayer(BaseRandomLayer):
         n_samples = X.shape[0]
 
         mlp_acts = np.zeros((n_samples, self.n_hidden))
-        if (self._use_mlp_input):
+        if self._use_mlp_input:
             b = self.components_['biases']
             w = self.components_['weights']
             mlp_acts = self.alpha * (safe_sparse_dot(X, w) + b)
 
         rbf_acts = np.zeros((n_samples, self.n_hidden))
-        if (self._use_rbf_input):
+        if self._use_rbf_input:
             radii = self.components_['radii']
             centers = self.components_['centers']
             scale = self.rbf_width * (1.0 - self.alpha)
@@ -486,7 +496,7 @@ class GRBFRandomLayer(RBFRandomLayer):
 
     #     return np.exp(np.exp(-pow(acts, taus)))
 
-    _grbf = (lambda acts, taus: np.exp(np.exp(-pow(acts, taus))))
+    _grbf = lambda acts, taus: np.exp(np.exp(-pow(acts, taus)))
 
     _internal_activation_funcs = {'grbf': _grbf}
 
