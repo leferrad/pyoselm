@@ -1,6 +1,9 @@
 # pyoselm
 
-A Python implementation of Online Sequential Extreme Machine Learning (OS-ELM) for online machine learning
+*A Python implementation of Online Sequential Extreme Machine Learning (OS-ELM) for online machine learning*
+
+
+[![Build Status](https://travis-ci.org/leferrad/pyoselm.svg?branch=master)](https://travis-ci.org/leferrad/pyoselm)
 
 ### Dependencies
 
