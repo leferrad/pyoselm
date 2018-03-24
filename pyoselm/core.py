@@ -41,7 +41,8 @@ __all__ = ["ELMRegressor",
            "GenELMRegressor",
            "GenELMClassifier",
            "OSELMRegressor",
-           "OSELMClassifier"]
+           "OSELMClassifier",
+           "OSELMClassifierSoftmax"]
 
 
 # BaseELM class, regressor and hidden_layer attributes
