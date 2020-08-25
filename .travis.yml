@@ -14,14 +14,14 @@ notifications:
 before_install:
   - python --version
   - pip install -U pip
-  - pip install -U pytest
+  - pip install -U pytest pytest-cov
   - pip install codecov
 
 install:
   - pip install ".[tests]" .  # install package + test dependencies
 
 script:
-  - pytest --cov=pyoselm tests  # run tests
+  - pytest --cov=pyoselm tests/  # run tests
 
 after_success:
   - codecov # submit coverage
