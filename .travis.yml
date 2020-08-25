@@ -22,7 +22,7 @@ install:
 
 script:
   # run tests
-  - pytest --cov=pyoselm --cov-report=xml tests/
+  - pytest --cov=pyoselm --cov-report=term --cov-report=html:tests/coverage tests/
 
 after_success:
   - codecov # submit coverage
