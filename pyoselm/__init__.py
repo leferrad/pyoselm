@@ -1,4 +1,5 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+from pyoselm.elm import *
+from pyoselm.layer import *
+from pyoselm.oselm import *
 
-from pyoselm.core import *
+__version__ = "1.0.0"
