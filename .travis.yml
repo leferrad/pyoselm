@@ -12,9 +12,17 @@ notifications:
     on_success: always
     on_failure: never
 
+before_install:
+  - python --version
+  - pip install -U pip
+  - pip install -U pytest
+  - pip install codecov
+
 install:
-  - python setup.py install
+  - pip install ".[tests]" .  # install package + test dependencies
 
 script:
-  - pytest --cov=pyoselm --cov-report=term --cov-report=html:tests/coverage tests/
+  - pytest  # run tests
 
+after_success:
+  - codecov # submit coverage
