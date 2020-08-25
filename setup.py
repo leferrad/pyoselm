@@ -1,19 +1,27 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
 from distutils.core import setup
 from setuptools import find_packages
 
 setup(
     name="pyoselm",
-    version="0.1.0",
+    version="1.0.0",
     author="Leandro Ferrado",
-    author_email="ljferrado@gmail.com",
+    author_email="leferrad@gmail.com",
     url="https://github.com/leferrad/pyoselm",
-    packages=find_packages(exclude=['examples', 'test']),
-    license="LICENSE",
-    description="A Python implementation of Online Sequential Extreme Machine Learning (OS-ELM) "
+    packages=find_packages(exclude=['examples', 'tests']),
+    license="Apache License 2.0",
+    description="A Python implementation of "
+                "Online Sequential Extreme Machine Learning (OS-ELM) "
                 "for online machine learning",
     long_description=open("README.md").read(),
-    install_requires=open("requirements.txt").read().split()
+    install_requires=open("requirements.txt").read().split(),
+    extras_require={
+        'tests': [
+            'pytest==6.0.1',
+            'pytest-pep8==1.0.6',
+            'pytest-cov==2.10.1',
+        ],
+        'examples': [
+
+        ]
+    }
 )
