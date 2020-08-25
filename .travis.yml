@@ -8,7 +8,7 @@ python:
 
 notifications:
   email:
-    on_success: always
+    on_success: never
     on_failure: never
 
 before_install:
@@ -26,3 +26,4 @@ script:
 
 after_success:
   - codecov # submit coverage
+
