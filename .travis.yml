@@ -21,7 +21,8 @@ install:
   - pip install ".[tests]" .  # install package + test dependencies
 
 script:
-  - pytest --cov=pyoselm tests/  # run tests
+  # run tests
+  - pytest --cov=pyoselm tests/ --cov-report=term --cov-report=html:tests/coverage
 
 after_success:
   - codecov # submit coverage
