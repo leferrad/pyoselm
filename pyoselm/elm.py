@@ -379,6 +379,21 @@ class ELMRegressor(BaseEstimator, RegressorMixin):
     `genelm_regressor_` : GenELMRegressor object
         Wrapped object that actually performs the fit.
 
+    Examples
+    --------
+    >>> from pyoselm import ELMRegressor
+    >>> from sklearn.datasets import make_regression
+    >>> X, y = make_regression(n_samples=100, n_targets=1, n_features=10)
+    >>> model = ELMRegressor(n_hidden=100,
+    ...                      activation_func="tanh",
+    ...                      random_state=123)
+    >>> model.fit(X, y)
+    ELMRegressor(activation_args=None, activation_func='tanh', alpha=0.5,
+                 n_hidden=100, random_state=123, rbf_width=1.0, regressor=None,
+                 user_components=None)
+    >>> model.score(X, y)
+    1.0
+
     See Also
     --------
     RandomLayer, RBFRandomLayer, MLPRandomLayer,
@@ -508,6 +523,23 @@ class ELMClassifier(ELMRegressor):
     ----------
     `classes_` : numpy array of shape [n_classes]
         Array of class labels
+
+    Examples
+    --------
+    >>> from pyoselm import ELMClassifier
+    >>> from sklearn.datasets import load_digits
+    >>> X, y = load_digits(n_class=10, return_X_y=True)
+    >>> model = ELMClassifier(n_hidden=100,
+    ...                       activation_func="tanh",
+    ...                       random_state=123)
+    >>> model.fit(X, y)
+    ELMClassifier(activation_args=None, activation_func='tanh', alpha=0.5,
+                  binarizer=LabelBinarizer(neg_label=-1, pos_label=1,
+                                           sparse_output=False),
+                  n_hidden=100, random_state=123, rbf_width=1.0, regressor=None,
+                  user_components=None)
+    >>> model.score(X, y)
+    0.9237618252643295
 
     See Also
     --------
