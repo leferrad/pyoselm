@@ -10,12 +10,11 @@
 from abc import ABCMeta, abstractmethod
 
 import numpy as np
-from scipy.linalg import pinv2
 from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
+from sklearn.linear_model import LinearRegression
 from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import LabelBinarizer
 from sklearn.utils import as_float_array
-from sklearn.utils.extmath import safe_sparse_dot
 
 from pyoselm.layer import RandomLayer, MLPRandomLayer
 
@@ -87,10 +86,8 @@ class GenELMRegressor(BaseELM, RegressorMixin):
     `hidden_layer` : random_layer instance, optional
         (default=MLPRandomLayer(random_state=0))
 
-    `regressor`    : regressor instance, optional (default=None)
-        If provided, this object is used to perform the regression from hidden
-        unit activations to the outputs and subsequent predictions.  If not
-        present, an ordinary linear least squares fit is performed
+    `regressor`    : regressor instance, optional
+        (default=LinearRegression())
 
     Attributes
     ----------
@@ -119,6 +116,14 @@ class GenELMRegressor(BaseELM, RegressorMixin):
         if hidden_layer is None:
             # Default value
             hidden_layer = MLPRandomLayer(random_state=0)
+        elif not isinstance(hidden_layer, RandomLayer):
+            raise ValueError("Argument 'hidden_layer' must be a RandomLayer instance")
+
+        if regressor is None:
+            # Default value
+            regressor = LinearRegression()
+        elif not isinstance(regressor, RegressorMixin):
+            raise ValueError("Argument 'regressor' must be a RegressorMixin instance")
 
         super(GenELMRegressor, self).__init__(hidden_layer, regressor)
 
@@ -127,15 +132,8 @@ class GenELMRegressor(BaseELM, RegressorMixin):
         self.hidden_activations_ = None
 
     def _fit_regression(self, y):
-        """Fit regression using ordinary linear least squares
-        or with the supplied regressor"""
-        if self.regressor is None:
-            # ordinary linear least squares through pseudo-inverse
-            self.coefs_ = safe_sparse_dot(pinv2(self.hidden_activations_), y)
-        else:
-            # using provided regressor
-            self.regressor.fit(self.hidden_activations_, y)
-
+        """Fit regression with the supplied regressor"""
+        self.regressor.fit(self.hidden_activations_, y)
         self.fitted_ = True
 
     def fit(self, X, y):
@@ -167,15 +165,8 @@ class GenELMRegressor(BaseELM, RegressorMixin):
         return self
 
     def _get_predictions(self):
-        """Get predictions using ordinary linear least squares
-        or with the supplied regressor"""
-        if self.regressor is None:
-            # simple dot product
-            preds = safe_sparse_dot(self.hidden_activations_, self.coefs_)
-        else:
-            # use regressor
-            preds = self.regressor.predict(self.hidden_activations_)
-
+        """Get predictions with the supplied regressor"""
+        preds = self.regressor.predict(self.hidden_activations_)
         return preds
 
     def predict(self, X):
@@ -220,10 +211,10 @@ class GenELMClassifier(BaseELM, ClassifierMixin):
     `binarizer`    : LabelBinarizer, optional
         (default=LabelBinarizer(-1, 1))
 
-    `regressor`    : regressor instance, optional (default=None)
-        If provided, this object is used to perform the regression from hidden
-        unit activations to the outputs and subsequent predictions.  If not
-        present, an ordinary linear least squares fit is performed
+    `regressor`    : regressor instance, optional
+        (default=LinearRegression())
+        Used to perform the regression from hidden unit activations
+        to the outputs and subsequent predictions.
 
     Attributes
     ----------
@@ -365,10 +356,10 @@ class ELMRegressor(BaseEstimator, RegressorMixin):
            'biases' : array-like of shape [n_hidden]
            'weights': array-like of shape [n_hidden, n_features]
 
-    `regressor`    : regressor instance, optional (default=None)
-        If provided, this object is used to perform the regression from hidden
-        unit activations to the outputs and subsequent predictions.  If not
-        present, an ordinary linear least squares fit is performed
+    `regressor`    : regressor instance, optional
+        (default=LinearRegression())
+        Used to perform the regression from hidden unit activations
+        to the outputs and subsequent predictions.
 
     `random_state`  : int, RandomState instance or None (default=None)
         Control the pseudo random number generator used to generate the
@@ -384,15 +375,13 @@ class ELMRegressor(BaseEstimator, RegressorMixin):
     >>> from pyoselm import ELMRegressor
     >>> from sklearn.datasets import make_regression
     >>> X, y = make_regression(n_samples=100, n_targets=1, n_features=10)
-    >>> model = ELMRegressor(n_hidden=100,
+    >>> model = ELMRegressor(n_hidden=20,
     ...                      activation_func="tanh",
     ...                      random_state=123)
     >>> model.fit(X, y)
-    ELMRegressor(activation_args=None, activation_func='tanh', alpha=0.5,
-                 n_hidden=100, random_state=123, rbf_width=1.0, regressor=None,
-                 user_components=None)
+    ELMRegressor(random_state=123)
     >>> model.score(X, y)
-    1.0
+    0.8600650083210614
 
     See Also
     --------
@@ -425,6 +414,9 @@ class ELMRegressor(BaseEstimator, RegressorMixin):
         self.user_components = user_components
         self.rbf_width = rbf_width
         self.regressor = regressor
+
+        # Just to validate input arguments
+        self._create_random_layer()
 
         self._genelm_regressor = None
 
@@ -529,17 +521,13 @@ class ELMClassifier(ELMRegressor):
     >>> from pyoselm import ELMClassifier
     >>> from sklearn.datasets import load_digits
     >>> X, y = load_digits(n_class=10, return_X_y=True)
-    >>> model = ELMClassifier(n_hidden=100,
-    ...                       activation_func="tanh",
+    >>> model = ELMClassifier(n_hidden=50,
+    ...                       activation_func="sigmoid",
     ...                       random_state=123)
     >>> model.fit(X, y)
-    ELMClassifier(activation_args=None, activation_func='tanh', alpha=0.5,
-                  binarizer=LabelBinarizer(neg_label=-1, pos_label=1,
-                                           sparse_output=False),
-                  n_hidden=100, random_state=123, rbf_width=1.0, regressor=None,
-                  user_components=None)
+    ELMClassifier(activation_func='sigmoid', n_hidden=50, random_state=123)
     >>> model.score(X, y)
-    0.9237618252643295
+    0.8241513633834168
 
     See Also
     --------

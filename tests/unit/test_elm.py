@@ -30,7 +30,7 @@ def test_gen_elm_regressor(hidden_layer, regressor):
 
     # score
     score = model.score(X, y)
-    assert score > 0.0, "Score of model is lower than expected"
+    assert -1.0 < score <= 1.0, "Score of model is not in expected range"
 
 
 @pytest.mark.parametrize("hidden_layer", [None, RBFRandomLayer()])
@@ -58,7 +58,7 @@ def test_gen_elm_classifier(hidden_layer, binarizer, regressor):
 
     # score
     score = model.score(X, y)
-    assert score > 0.0, "Score of model is lower than expected"
+    assert 0.0 < score <= 1.0, "Score of model is not in expected range"
 
 
 @pytest.mark.parametrize("n_hidden", [10, 100])
@@ -85,7 +85,7 @@ def test_elm_regressor(n_hidden, activation_func, regressor):
 
     # score
     score = model.score(X, y)
-    assert score > 0.0, "Score of model is lower than expected"
+    assert -1.0 < score <= 1.0, "Score of model is not in expected range"
 
 
 @pytest.mark.parametrize("n_hidden", [10, 100])
@@ -115,7 +115,7 @@ def test_elm_classifier(n_hidden, activation_func, binarizer, regressor):
 
     # score
     score = model.score(X, y)
-    assert score > 0.0, "Score of model is lower than expected"
+    assert 0.0 < score <= 1.0, "Score of model is not in expected range"
 
 
 def test_elm_regressor_reproducible_results():
@@ -198,3 +198,15 @@ def test_elm_bad_path():
 
     with pytest.raises(ValueError):
         model.predict(X)
+
+    # bad activation function
+    with pytest.raises(ValueError):
+        ELMRegressor(activation_func="bad")
+
+    # bad regressor
+    with pytest.raises(ValueError):
+        GenELMRegressor(regressor="bad")
+
+    # bad hidden_layer
+    with pytest.raises(ValueError):
+        GenELMRegressor(hidden_layer="bad")
