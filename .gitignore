@@ -62,6 +62,12 @@ instance/
 # Scrapy stuff:
 .scrapy
 
+# IDE stuff
+.idea
+
+# pytest stuff
+.pytest_cache
+
 # Sphinx documentation
 docs/_build/
 
