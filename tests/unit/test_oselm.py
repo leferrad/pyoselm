@@ -11,12 +11,15 @@ from pyoselm.oselm import (OSELMClassifier, OSELMRegressor,
 @pytest.mark.parametrize("n_hidden", [10, 100])
 @pytest.mark.parametrize("activation_func", ["tanh", "sine", "gaussian",
                                              "sigmoid", "softlim"])
-def test_oselm_regressor(n_hidden, activation_func):
+@pytest.mark.parametrize("use_woodbury", [False, True])
+def test_oselm_regressor(n_hidden, activation_func, use_woodbury):
     # get data
     X, y = make_regression(n_samples=100, n_targets=1, n_features=10)
 
     # build model
-    model = OSELMRegressor(n_hidden=n_hidden, activation_func=activation_func)
+    model = OSELMRegressor(n_hidden=n_hidden,
+                           activation_func=activation_func,
+                           use_woodbury=use_woodbury)
 
     # fit model
     model.fit(X, y)
@@ -25,6 +28,19 @@ def test_oselm_regressor(n_hidden, activation_func):
     y_pred = model.predict(X)
     min_y, max_y = min(y), max(y)
     assert all([min_y*2 < yy < max_y*2 for yy in y_pred]), \
+        "Predicted values out of expected range"
+
+    # score
+    score = model.score(X, y)
+    assert score > 0.0, "Score of model is lower than expected"
+
+    # partial fit
+    model.fit(X, y)
+
+    # predict
+    y_pred = model.predict(X)
+    min_y, max_y = min(y), max(y)
+    assert all([min_y * 2 < yy < max_y * 2 for yy in y_pred]), \
         "Predicted values out of expected range"
 
     # score
@@ -80,7 +96,14 @@ def test_oselm_classifier_softmax(n_hidden, activation_func):
     assert all([yy in set_y for yy in y_pred]), \
         "Predicted values out of expected range"
 
+    # predict proba
+    y_proba = model.predict_proba(X)
+    assert all([((yy >= 0) & (yy <= 1)).all() for yy in y_proba]), \
+        "Predicted values out of expected range"
+
     # score
     score = model.score(X, y)
     assert score > 0.0, "Score of model is lower than expected"
 
+
+# TODO: test with sparse data?
