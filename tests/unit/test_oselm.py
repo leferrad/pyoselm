@@ -71,6 +71,11 @@ def test_oselm_classifier(n_hidden, activation_func, binarizer):
     assert all([yy in set_y for yy in y_pred]), \
         "Predicted values out of expected range"
 
+    # predict proba
+    y_proba = model.predict_proba(X)
+    assert all([((yy >= 0) & (yy <= 1)).all() for yy in y_proba]), \
+        "Predicted values out of expected range"
+
     # score
     score = model.score(X, y)
     assert score > 0.0, "Score of model is lower than expected"
