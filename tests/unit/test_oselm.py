@@ -4,8 +4,7 @@ import pytest
 from sklearn.datasets import load_digits, make_regression
 from sklearn.preprocessing import LabelBinarizer
 
-from pyoselm.oselm import (OSELMClassifier, OSELMRegressor,
-                           OSELMClassifierSoftmax)
+from pyoselm.oselm import OSELMClassifier, OSELMRegressor
 
 
 @pytest.mark.parametrize("n_hidden", [10, 100])
@@ -61,36 +60,6 @@ def test_oselm_classifier(n_hidden, activation_func, binarizer):
     model = OSELMClassifier(n_hidden=n_hidden,
                             activation_func=activation_func,
                             binarizer=binarizer)
-
-    # fit model
-    model.fit(X, y)
-
-    # predict
-    y_pred = model.predict(X)
-    set_y = set(y)
-    assert all([yy in set_y for yy in y_pred]), \
-        "Predicted values out of expected range"
-
-    # predict proba
-    y_proba = model.predict_proba(X)
-    assert all([((yy >= 0) & (yy <= 1)).all() for yy in y_proba]), \
-        "Predicted values out of expected range"
-
-    # score
-    score = model.score(X, y)
-    assert score > 0.0, "Score of model is lower than expected"
-
-
-@pytest.mark.parametrize("n_hidden", [10, 100])
-@pytest.mark.parametrize("activation_func", ["tanh", "sine", "gaussian",
-                                             "sigmoid", "softlim"])
-def test_oselm_classifier_softmax(n_hidden, activation_func):
-    # get data
-    X, y = load_digits(n_class=10, return_X_y=True)
-
-    # build model
-    model = OSELMClassifierSoftmax(n_hidden=n_hidden,
-                                   activation_func=activation_func)
 
     # fit model
     model.fit(X, y)
