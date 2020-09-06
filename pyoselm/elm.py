@@ -337,7 +337,7 @@ class ELMRegressor(BaseEstimator, RegressorMixin):
     `rbf_width` : float, optional (default=1.0)
         multiplier on rbf_activation
 
-    `activation_func` : {callable, string} optional (default='tanh')
+    `activation_func` : {callable, string} optional (default='sigmoid')
         Function used to transform input activation
 
         It must be one of 'tanh', 'sine', 'tribas', 'inv_tribase', 'sigmoid',
@@ -400,7 +400,7 @@ class ELMRegressor(BaseEstimator, RegressorMixin):
                  n_hidden=20,
                  alpha=0.5,
                  rbf_width=1.0,
-                 activation_func='tanh',
+                 activation_func='sigmoid',
                  activation_args=None,
                  user_components=None,
                  regressor=None,
@@ -496,7 +496,7 @@ class ELMClassifier(ELMRegressor):
     `n_hidden` : int, optional (default=20)
         Number of units to generate in the SimpleRandomLayer
 
-    `activation_func` : {callable, string} optional (default='tanh')
+    `activation_func` : {callable, string} optional (default='sigmoid')
         Function used to transform input activation
 
         It must be one of 'tanh', 'sine', 'tribas', 'inv_tribase', 'sigmoid',
@@ -546,7 +546,7 @@ class ELMClassifier(ELMRegressor):
                  n_hidden=20,
                  alpha=0.5,
                  rbf_width=1.0,
-                 activation_func='tanh',
+                 activation_func='sigmoid',
                  activation_args=None,
                  user_components=None,
                  regressor=None,
