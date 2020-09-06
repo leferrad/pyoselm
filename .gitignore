@@ -64,6 +64,7 @@ instance/
 
 # IDE stuff
 .idea
+.vscode
 
 # pytest stuff
 .pytest_cache
