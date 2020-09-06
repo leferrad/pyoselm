@@ -141,7 +141,7 @@ class OSELMRegressor(BaseEstimator, RegressorMixin):
             self.beta = multiple_safe_sparse_dot(self.P, H.T, y)
         else:
             if len(H) > 10e3:
-                warnings.warn(f"Large input of {len(H)} rows and use_woodbury=True "
+                warnings.warn(f"Large input of {len(H)} rows and use_woodbury=True "\
                               f"may throw OOM errors")
 
             M = np.eye(len(H)) + multiple_safe_sparse_dot(H, self.P, H.T)  # TODO: sparse np.eye?
