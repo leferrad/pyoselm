@@ -10,6 +10,7 @@
 from abc import ABCMeta, abstractmethod
 
 import numpy as np
+from scipy.special import softmax
 from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import accuracy_score
@@ -669,7 +670,27 @@ class ELMClassifier(ELMRegressor):
 
         return class_predictions
 
-    # TODO: predict_proba?
+    def predict_proba(self, X):
+        """
+        Predict probability values using the model
+
+        Parameters
+        ----------
+        X : {array-like, sparse matrix} of shape [n_samples, n_features]
+
+        Returns
+        -------
+        P : numpy array of shape [n_samples, n_outputs]
+            Predicted probability values.
+        """
+        if not self.is_fitted:
+            raise ValueError("ELMClassifier not fitted")
+
+        raw_predictions = self.decision_function(X)
+        # using softmax to translate raw predictions into probability values
+        proba_predictions = softmax(raw_predictions)
+
+        return proba_predictions
 
     def score(self, X, y, **kwargs):
         """Force use of accuracy score since
