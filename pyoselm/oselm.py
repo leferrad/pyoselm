@@ -11,7 +11,7 @@ import warnings
 import numpy as np
 from scipy.linalg import pinv2
 from scipy.special import softmax
-from sklearn.base import RegressorMixin, ClassifierMixin, BaseEstimator
+from sklearn.base import RegressorMixin, BaseEstimator
 from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import LabelBinarizer
 from sklearn.utils import as_float_array
@@ -136,7 +136,6 @@ class OSELMRegressor(BaseEstimator, RegressorMixin):
                 raise ValueError("The first time the model is fitted, "
                                  "X must have at least equal number of "
                                  "samples than n_hidden value!")
-            # TODO: handle cases of singular matrices (maybe with a try clause)
             self.P = pinv2(safe_sparse_dot(H.T, H))
             self.beta = multiple_safe_sparse_dot(self.P, H.T, y)
         else:
@@ -144,7 +143,7 @@ class OSELMRegressor(BaseEstimator, RegressorMixin):
                 warnings.warn("Large input of %i rows and use_woodbury=True "\
                               "may throw OOM errors" % len(H))
 
-            M = np.eye(len(H)) + multiple_safe_sparse_dot(H, self.P, H.T)  # TODO: sparse np.eye?
+            M = np.eye(len(H)) + multiple_safe_sparse_dot(H, self.P, H.T)
             self.P -= multiple_safe_sparse_dot(self.P, H.T, pinv2(M), H, self.P)
             e = y - safe_sparse_dot(H, self.beta)
             self.beta += multiple_safe_sparse_dot(self.P, H.T, e)
@@ -202,6 +201,10 @@ class OSELMRegressor(BaseEstimator, RegressorMixin):
 
         return self
 
+    @property
+    def is_fitted(self):
+        return self.beta is not None
+
     def predict(self, X):
         """
         Predict values using the model
@@ -215,7 +218,7 @@ class OSELMRegressor(BaseEstimator, RegressorMixin):
         C : numpy array of shape [n_samples, n_outputs]
             Predicted values.
         """
-        if self.beta is None:
+        if not self.is_fitted:
             raise ValueError("OSELMRegressor not fitted")
 
         # compute hidden layer activations
@@ -341,8 +344,6 @@ class OSELMClassifier(OSELMRegressor):
 
         return self
 
-    # TODO: partial_fit
-
     def predict(self, X):
         """
         Predict class values using the model
@@ -356,6 +357,9 @@ class OSELMClassifier(OSELMRegressor):
         C : numpy array of shape [n_samples, n_outputs]
             Predicted class values.
         """
+        if not self.is_fitted:
+            raise ValueError("OSELMClassifier not fitted")
+
         raw_predictions = self.decision_function(X)
         class_predictions = self.binarizer.inverse_transform(raw_predictions)
 
@@ -374,6 +378,9 @@ class OSELMClassifier(OSELMRegressor):
         P : numpy array of shape [n_samples, n_outputs]
             Predicted probability values.
         """
+        if not self.is_fitted:
+            raise ValueError("OSELMClassifier not fitted")
+
         raw_predictions = self.decision_function(X)
         # using softmax to translate raw predictions into probability values
         proba_predictions = softmax(raw_predictions)
