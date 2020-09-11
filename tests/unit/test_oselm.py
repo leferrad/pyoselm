@@ -1,10 +1,11 @@
 """Unit tests for pyoselm.oselm module"""
 
+import numpy as np
 import pytest
 from sklearn.datasets import load_digits, make_regression
 from sklearn.preprocessing import LabelBinarizer
 
-from pyoselm.oselm import OSELMClassifier, OSELMRegressor
+from pyoselm.oselm import OSELMClassifier, OSELMRegressor, multiple_safe_sparse_dot
 
 
 @pytest.mark.parametrize("n_hidden", [10, 100])
@@ -80,4 +81,64 @@ def test_oselm_classifier(n_hidden, activation_func, binarizer):
     assert score > 0.0, "Score of model is lower than expected"
 
 
+def test_multiple_safe_sparse_dot():
+    n = 10
+    a, b = 2, 3
+    matrices = [np.ones((n, n)), np.ones((n, n))*a, np.ones((n, n))*b]
+
+    with pytest.raises(ValueError):
+        # just 1 matrix, no sparse dot allowed
+        multiple_safe_sparse_dot(matrices[0])
+
+    res = multiple_safe_sparse_dot(*matrices)
+    print(res)
+    assert np.array_equal(res, np.ones((n, n))*n*n*a*b)
+
+
+def test_oselm_bad_path():
+    # predict() without fit
+    X, y = make_regression(n_samples=100, n_targets=1, n_features=10)
+    model = OSELMRegressor()
+
+    with pytest.raises(ValueError):
+        model.predict(X)
+
+    # predict() without fit
+    X, y = load_digits(n_class=10, return_X_y=True)
+    model = OSELMClassifier()
+
+    with pytest.raises(ValueError):
+        model.predict(X)
+
+    with pytest.raises(ValueError):
+        model.predict_proba(X)
+
+    # fit OSELM model for first time with not enough rows
+    model = OSELMClassifier(use_woodbury=False)
+    with pytest.raises(ValueError):
+        model.fit(X[:2, :], y[:2])
+
+    model = OSELMClassifier(use_woodbury=True)
+    with pytest.raises(ValueError):
+        model.fit(X[:2, :], y[:2])
+
+
+@pytest.mark.skip("Very expensive test")
+def test_oselm_fit_woodbury_large_input():
+    n = 20e3
+    X, y = make_regression(n_samples=int(n), n_targets=1, n_features=10)
+
+    model = OSELMRegressor(use_woodbury=True)
+
+    model.fit(X, y)
+    # Second fit throws the warning about large input
+    model.fit(X, y)
+
+    score = model.score(X, y)
+
+    assert score > 1.0
+
+
 # TODO: test with sparse data?
+
+# TODO: test with singular matrix?

@@ -113,6 +113,11 @@ def test_elm_classifier(n_hidden, activation_func, binarizer, regressor):
     assert all([yy in set_y for yy in y_pred]), \
         "Predicted values out of expected range"
 
+    # predict proba
+    y_proba = model.predict_proba(X)
+    assert all([((yy >= 0) & (yy <= 1)).all() for yy in y_proba]), \
+        "Predicted values out of expected range"
+
     # score
     score = model.score(X, y)
     assert 0.0 < score <= 1.0, "Score of model is not in expected range"
@@ -191,6 +196,10 @@ def test_elm_bad_path():
 
     with pytest.raises(ValueError):
         model.predict(X)
+    
+    # decision_function() without fit
+    with pytest.raises(ValueError):
+        model.decision_function(X)
 
     # predict() without fit
     X, y = make_regression(n_samples=100, n_targets=1, n_features=10)
@@ -198,6 +207,14 @@ def test_elm_bad_path():
 
     with pytest.raises(ValueError):
         model.predict(X)
+
+    # predict_proba() without fit
+    with pytest.raises(ValueError):
+        model.predict_proba(X)
+
+    # decision_function() without fit
+    with pytest.raises(ValueError):
+        model.decision_function(X)
 
     # bad activation function
     with pytest.raises(ValueError):
