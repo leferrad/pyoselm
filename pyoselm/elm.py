@@ -136,6 +136,16 @@ class GenELMRegressor(BaseELM, RegressorMixin):
         self.regressor.fit(self.hidden_activations_, y)
         self.fitted_ = True
 
+    @property
+    def is_fitted(self):
+        """Check if model was fitted
+
+        Returns
+        -------
+            boolean, True if model is fitted
+        """
+        return self.fitted_
+
     def fit(self, X, y):
         """
         Fit the model using X, y as training data.
@@ -182,8 +192,8 @@ class GenELMRegressor(BaseELM, RegressorMixin):
         C : numpy array of shape [n_samples, n_outputs]
             Predicted values.
         """
-        if not self.fitted_:
-            raise ValueError("ELMRegressor not fitted")
+        if not self.is_fitted:
+            raise ValueError("GenELMRegressor not fitted")
 
         # compute hidden layer activations
         self.hidden_activations_ = self.hidden_layer.transform(X)
@@ -248,24 +258,7 @@ class GenELMClassifier(BaseELM, ClassifierMixin):
         self.binarizer = binarizer
 
         self.classes_ = None
-        self.genelm_regressor_ = GenELMRegressor(hidden_layer, regressor)
-
-    def decision_function(self, X):
-        """
-        This function return the decision function values related to each
-        class on an array of test vectors X.
-
-        Parameters
-        ----------
-        X : array-like of shape [n_samples, n_features]
-
-        Returns
-        -------
-        C : array of shape [n_samples, n_classes] or [n_samples,]
-            Decision function values related to each class, per sample.
-            In the two-class case, the shape is [n_samples,]
-        """
-        return self.genelm_regressor_.predict(X)
+        self._genelm_regressor = GenELMRegressor(hidden_layer, regressor)
 
     def fit(self, X, y):
         """
@@ -291,8 +284,38 @@ class GenELMClassifier(BaseELM, ClassifierMixin):
 
         y_bin = self.binarizer.fit_transform(y)
 
-        self.genelm_regressor_.fit(X, y_bin)
+        self._genelm_regressor.fit(X, y_bin)
         return self
+
+    @property
+    def is_fitted(self):
+        """Check if model was fitted
+
+        Returns
+        -------
+            boolean, True if model is fitted
+        """
+        return self._genelm_regressor is not None and self._genelm_regressor.is_fitted
+
+    def decision_function(self, X):
+        """
+        This function return the decision function values related to each
+        class on an array of test vectors X.
+
+        Parameters
+        ----------
+        X : array-like of shape [n_samples, n_features]
+
+        Returns
+        -------
+        C : array of shape [n_samples, n_classes] or [n_samples,]
+            Decision function values related to each class, per sample.
+            In the two-class case, the shape is [n_samples,]
+        """
+        if not self.is_fitted:
+            raise ValueError("GenELMClassifier not fitted")
+
+        return self._genelm_regressor.predict(X)
 
     def predict(self, X):
         """Predict values using the model
@@ -306,6 +329,9 @@ class GenELMClassifier(BaseELM, ClassifierMixin):
         C : numpy array of shape [n_samples, n_outputs]
             Predicted values.
         """
+        if not self.is_fitted:
+            raise ValueError("GenELMClassifier not fitted")
+
         raw_predictions = self.decision_function(X)
         class_predictions = self.binarizer.inverse_transform(raw_predictions)
 
@@ -456,6 +482,16 @@ class ELMRegressor(BaseEstimator, RegressorMixin):
         self._genelm_regressor.fit(X, y)
         return self
 
+    @property
+    def is_fitted(self):
+        """Check if model was fitted
+
+        Returns
+        -------
+            boolean, True if model is fitted
+        """
+        return self._genelm_regressor is not None and self._genelm_regressor.is_fitted
+
     def predict(self, X):
         """
         Predict values using the model
@@ -469,7 +505,7 @@ class ELMRegressor(BaseEstimator, RegressorMixin):
         C : numpy array of shape [n_samples, n_outputs]
             Predicted values.
         """
-        if self._genelm_regressor is None:
+        if not self.is_fitted:
             raise ValueError("ELMRegressor is not fitted")
 
         return self._genelm_regressor.predict(X)
@@ -565,23 +601,6 @@ class ELMClassifier(ELMRegressor):
         self.classes_ = None
         self.binarizer = binarizer
 
-    def decision_function(self, X):
-        """
-        This function return the decision function values related to each
-        class on an array of test vectors X.
-
-        Parameters
-        ----------
-        X : array-like of shape [n_samples, n_features]
-
-        Returns
-        -------
-        C : array of shape [n_samples, n_classes] or [n_samples,]
-            Decision function values related to each class, per sample.
-            In the two-class case, the shape is [n_samples,]
-        """
-        return super(ELMClassifier, self).predict(X)
-
     def fit(self, X, y):
         """
         Fit the model using X, y as training data.
@@ -609,6 +628,26 @@ class ELMClassifier(ELMRegressor):
 
         return self
 
+    def decision_function(self, X):
+        """
+        This function return the decision function values related to each
+        class on an array of test vectors X.
+
+        Parameters
+        ----------
+        X : array-like of shape [n_samples, n_features]
+
+        Returns
+        -------
+        C : array of shape [n_samples, n_classes] or [n_samples,]
+            Decision function values related to each class, per sample.
+            In the two-class case, the shape is [n_samples,]
+        """
+        if not self.is_fitted:
+            raise ValueError("ELMClassifier is not fitted")
+
+        return super(ELMClassifier, self).predict(X)
+
     def predict(self, X):
         """
         Predict values using the model
@@ -622,10 +661,15 @@ class ELMClassifier(ELMRegressor):
         C : numpy array of shape [n_samples, n_outputs]
             Predicted values.
         """
+        if not self.is_fitted:
+            raise ValueError("ELMClassifier is not fitted")
+
         raw_predictions = self.decision_function(X)
         class_predictions = self.binarizer.inverse_transform(raw_predictions)
 
         return class_predictions
+
+    # TODO: predict_proba?
 
     def score(self, X, y, **kwargs):
         """Force use of accuracy score since
