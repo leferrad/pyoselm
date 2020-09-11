@@ -1,29 +1,36 @@
-# pyoselm
+<img style="display: inline;" src="docs/img/pyoselm_logo.png" width="300"/>
 
 *A Python implementation of Online Sequential Extreme Machine Learning (OS-ELM) for online machine learning*
 
-
 [![Build Status](https://travis-ci.org/leferrad/pyoselm.svg?branch=master)](https://travis-ci.org/leferrad/pyoselm)
+[![Documentation Status](http://readthedocs.org/projects/pyoselm/badge/?version=latest)](http://pyoselm.readthedocs.io/?badge=latest)
+[![Coverage Status](https://codecov.io/gh/leferrad/pyoselm/branch/master/graph/badge.svg)](https://codecov.io/gh/leferrad/pyoselm)
 
-### Dependencies
+### Description
 
-- Numpy
-- Scipy
-- Scikit-learn
+**pyoselm** is a Python library for machine learning models with Extreme Machine Learning (ELM) and Online Sequential Machine Learning (OS-ELM). It allows to fit models for regression and classification tasks, both in batch and online learning (either row-by-row or chunk-by-chunk).
 
-Original publication: 
-
-> Huang, G. B., Liang, N. Y., Rong, H. J., Saratchandran, P., & Sundararajan, N. (2005). 
-  On-Line Sequential Extreme Learning Machine. Computational Intelligence, 2005, 232-237.
-
-Link: https://pdfs.semanticscholar.org/2ebd/fa3852e4ad68a0cfde9f0f69b95953d69178.pdf
-
-Implementation strongly based on the following repos:
+This library offers a scikit-learn like API for easy usage, and the implementation is strongly based on the following repos:
 
 - https://github.com/ExtremeLearningMachines/ELM-MATLAB-and-Online.Sequential.ELM
 - https://github.com/dclambert/Python-ELM
 
+**Original publication:** 
+
+> Huang, G. B., Liang, N. Y., Rong, H. J., Saratchandran, P., & Sundararajan, N. (2005). 
+  On-Line Sequential Extreme Learning Machine. Computational Intelligence, 2005, 232-237.
+
+### Setup
+
+The easiest way to install this library is using `pip`:
+
+```
+$ pip install pyoselm
+```
+
 ### Usage
+
+Here a simple but complete example of usage. For more information, please check the documentation.
 
 ```python
 from pyoselm import OSELMRegressor, OSELMClassifier
@@ -71,4 +78,4 @@ print("Train score of total: %s" % str(oselmc.score(x, y)))
 
 ```
 
-NOTE: Chuck-by-chunk is faster than one-by-one
+> NOTE: Chuck-by-chunk is faster than one-by-one
