@@ -1,44 +1,34 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+"""Module to provide random layers for ELM models"""
 
+# ===================================================
+# Acknowledgement:
 # Author: David C. Lambert [dcl -at- panix -dot- com]
 # Copyright(c) 2013
 # License: Simple BSD
-
-"""Random layers are arrays of hidden unit activations that are
-random functions of input activation values (dot products for simple
-activation functions, distances from prototypes for radial basis
-functions).
-
-They are used in the implementation of Extreme Learning Machines (ELMs),
-but can be used as a general input mapping.
-"""
+# ===================================================
 
 from abc import ABCMeta, abstractmethod
-
 from math import sqrt
 
 import numpy as np
 import scipy.sparse as sp
 from scipy.spatial.distance import cdist, pdist, squareform
-
+from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.metrics import pairwise_distances
 from sklearn.utils import check_random_state, check_array
-from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.utils.extmath import safe_sparse_dot
 
 
-def multiple_safe_sparse_dot(*matrices):
-    assert len(matrices) > 1, ValueError("Argument 'matrices' must have at least 2 matrices!")
-    r = matrices[0]
-    for m in matrices[1:]:
-        r = safe_sparse_dot(r, m)
-
-    return r
+__all__ = [
+    "RandomLayer",
+    "MLPRandomLayer",
+    "RBFRandomLayer",
+    "GRBFRandomLayer",
+]
 
 
 class BaseRandomLayer(BaseEstimator, TransformerMixin):
-    """Abstract Base Class for random  layers"""
+    """Abstract Base class for random layers"""
     __metaclass__ = ABCMeta
 
     _internal_activation_funcs = dict()
@@ -48,10 +38,11 @@ class BaseRandomLayer(BaseEstimator, TransformerMixin):
         """Get list of internal activation function names"""
         return cls._internal_activation_funcs.keys()
 
-    # take n_hidden and random_state, init components_ and
-    # input_activations_
-    def __init__(self, n_hidden=20, random_state=0, activation_func=None,
-                 activation_args=None):
+    def __init__(self,
+                 n_hidden=20,
+                 random_state=0,
+                 activation_func=None,
+                 activation_args=None,):
 
         self.n_hidden = n_hidden
         self.random_state = random_state
@@ -72,11 +63,11 @@ class BaseRandomLayer(BaseEstimator, TransformerMixin):
     def _compute_input_activations(self, X):
         """Compute input activations given X"""
 
-    # compute input activations and pass them
-    # through the hidden layer transfer functions
-    # to compute the transform
     def _compute_hidden_activations(self, X):
         """Compute hidden activations given X"""
+        # compute input activations and pass them
+        # through the hidden layer transfer functions
+        # to compute the transform
 
         self._compute_input_activations(X)
 
@@ -88,13 +79,10 @@ class BaseRandomLayer(BaseEstimator, TransformerMixin):
         else:
             func_name = self.activation_func
             func = self._internal_activation_funcs[func_name]
-
             X_new = func(acts, **self._extra_args)
 
         return X_new
 
-    # perform fit by generating random components based
-    # on the input array
     def fit(self, X, y=None):
         """Generate a random hidden layer.
 
@@ -104,20 +92,19 @@ class BaseRandomLayer(BaseEstimator, TransformerMixin):
             Training set: only the shape is used to generate random component
             values for hidden units
 
-        y : is not used: placeholder to allow for usage in a Pipeline.
+        y : not used: placeholder to allow for usage in a Pipeline.
 
         Returns
         -------
         self
         """
-        X = check_array(X)
-
+        # perform fit by generating random components based
+        # on the input array
+        X = check_array(X, accept_sparse=True)
         self._generate_components(X)
 
         return self
 
-    # perform transformation by calling compute_hidden_activations
-    # (which will normally call compute_input_activations first)
     def transform(self, X, y=None):
         """Generate the random hidden layer's activations given X as input.
 
@@ -126,15 +113,17 @@ class BaseRandomLayer(BaseEstimator, TransformerMixin):
         X : {array-like, sparse matrix}, shape [n_samples, n_features]
             Data to transform
 
-        y : is not used: placeholder to allow for usage in a Pipeline.
+        y : not used: placeholder to allow for usage in a Pipeline.
 
         Returns
         -------
         X_new : numpy array of shape [n_samples, n_components]
         """
-        X = check_array(X)
+        # perform transformation by calling compute_hidden_activations
+        # (which will normally call compute_input_activations first)
+        X = check_array(X, accept_sparse=True)
 
-        if self.components_ is None:
+        if len(self.components_) == 0:
             raise ValueError('No components initialized')
 
         return self._compute_hidden_activations(X)
@@ -182,7 +171,7 @@ class RandomLayer(BaseRandomLayer):
         multiplier on rbf_activation
 
     `user_components`: dictionary, optional (default=None)
-        dictionary containing values for components that woud otherwise be
+        dictionary containing values for components that would otherwise be
         randomly generated.  Valid key/value pairs are as follows:
            'radii'  : array-like of shape [n_hidden]
            'centers': array-like of shape [n_hidden, n_features]
@@ -218,6 +207,7 @@ class RandomLayer(BaseRandomLayer):
     See Also
     --------
     """
+
     # triangular activation function
     _tribas = lambda x: np.clip(1.0 - np.fabs(x), 0.0, 1.0)
 
@@ -236,7 +226,7 @@ class RandomLayer(BaseRandomLayer):
     _linear = lambda x: x
 
     # ReLU
-    _relu = lambda x: max(0.0, x)
+    _relu = lambda x: np.maximum(x, 0)
 
     # Softplus activation function
     _softplus = lambda x: np.log(1.0 + np.exp(x))
@@ -251,34 +241,42 @@ class RandomLayer(BaseRandomLayer):
     _inv_multiquadric = lambda x: 1.0/(np.sqrt(1.0 + pow(x, 2.0)))
 
     # internal activation function table
-    _internal_activation_funcs = {'sine': np.sin,
-                                  'tanh': np.tanh,
-                                  'tribas': _tribas,
-                                  'inv_tribas': _inv_tribas,
-                                  'linear': _linear,
-                                  'relu': _relu,
-                                  'softplus': _softplus,
-                                  'sigmoid': _sigmoid,
-                                  'softlim': _softlim,
-                                  'hardlim': _hardlim,
-                                  'gaussian': _gaussian,
-                                  'multiquadric': _multiquadric,
-                                  'inv_multiquadric': _inv_multiquadric,
-                                  }
+    _internal_activation_funcs = {
+        'sine': np.sin,
+        'tanh': np.tanh,
+        'tribas': _tribas,
+        'inv_tribas': _inv_tribas,
+        'linear': _linear,
+        'relu': _relu,
+        'softplus': _softplus,
+        'sigmoid': _sigmoid,
+        'softlim': _softlim,
+        'hardlim': _hardlim,
+        'gaussian': _gaussian,
+        'multiquadric': _multiquadric,
+        'inv_multiquadric': _inv_multiquadric,
+    }
 
-    def __init__(self, n_hidden=20, alpha=0.5, random_state=None,
-                 activation_func='tanh', activation_args=None,
-                 user_components=None, rbf_width=1.0):
+    def __init__(self,
+                 n_hidden=20,
+                 alpha=0.5,
+                 random_state=None,
+                 activation_func='tanh',
+                 activation_args=None,
+                 user_components=None,
+                 rbf_width=1.0,):
 
-        super(RandomLayer, self).__init__(n_hidden=n_hidden,
-                                          random_state=random_state,
-                                          activation_func=activation_func,
-                                          activation_args=activation_args)
+        super(RandomLayer, self).__init__(
+            n_hidden=n_hidden,
+            random_state=random_state,
+            activation_func=activation_func,
+            activation_args=activation_args
+        )
 
         if isinstance(self.activation_func, str):
             func_names = self._internal_activation_funcs.keys()
             if self.activation_func not in func_names:
-                msg = "unknown activation function '%s'" % self.activation_func
+                msg = "Unknown activation function '%s'" % self.activation_func
                 raise ValueError(msg)
 
         self.alpha = alpha
@@ -317,22 +315,20 @@ class RandomLayer(BaseRandomLayer):
         # use supplied centers if present
         centers = self._get_user_components('centers')
 
-        # use points taken uniformly from the bounding
-        # hyperrectangle
+        # use points taken uniformly from the bounding hyperrectangle
         if centers is None:
             n_features = X.shape[1]
 
             if sparse:
-                fxr = xrange(n_features)
-                cols = [X.getcol(i) for i in fxr]
+                cols = [X.getcol(i) for i in range(n_features)]
 
                 min_dtype = X.dtype.type(1.0e10)
                 sp_min = lambda col: np.minimum(min_dtype, np.min(col.data))
-                min_Xs = np.array(map(sp_min, cols))
+                min_Xs = np.array(list(map(sp_min, cols)))
 
                 max_dtype = X.dtype.type(-1.0e10)
                 sp_max = lambda col: np.maximum(max_dtype, np.max(col.data))
-                max_Xs = np.array(map(sp_max, cols))
+                max_Xs = np.array(list(map(sp_max, cols)))
             else:
                 min_Xs = X.min(axis=0)
                 max_Xs = X.max(axis=0)
@@ -394,6 +390,10 @@ class RandomLayer(BaseRandomLayer):
             radii = self.components_['radii']
             centers = self.components_['centers']
             scale = self.rbf_width * (1.0 - self.alpha)
+
+            if sp.issparse(X):
+                X = X.todense()
+
             rbf_acts = scale * cdist(X, centers)/radii
 
         self.input_activations_ = mlp_acts + rbf_acts
@@ -408,12 +408,14 @@ class MLPRandomLayer(RandomLayer):
                  weights=None, biases=None):
 
         user_components = {'weights': weights, 'biases': biases}
-        super(MLPRandomLayer, self).__init__(n_hidden=n_hidden,
-                                             random_state=random_state,
-                                             activation_func=activation_func,
-                                             activation_args=activation_args,
-                                             user_components=user_components,
-                                             alpha=1.0)
+        super(MLPRandomLayer, self).__init__(
+            n_hidden=n_hidden,
+            random_state=random_state,
+            activation_func=activation_func,
+            activation_args=activation_args,
+            user_components=user_components,
+            alpha=1.0
+        )
 
 
 class RBFRandomLayer(RandomLayer):
@@ -425,13 +427,15 @@ class RBFRandomLayer(RandomLayer):
                  centers=None, radii=None, rbf_width=1.0):
 
         user_components = {'centers': centers, 'radii': radii}
-        super(RBFRandomLayer, self).__init__(n_hidden=n_hidden,
-                                             random_state=random_state,
-                                             activation_func=activation_func,
-                                             activation_args=activation_args,
-                                             user_components=user_components,
-                                             rbf_width=rbf_width,
-                                             alpha=0.0)
+        super(RBFRandomLayer, self).__init__(
+            n_hidden=n_hidden,
+            random_state=random_state,
+            activation_func=activation_func,
+            activation_args=activation_args,
+            user_components=user_components,
+            rbf_width=rbf_width,
+            alpha=0.0
+        )
 
 
 class GRBFRandomLayer(RBFRandomLayer):
@@ -491,40 +495,39 @@ class GRBFRandomLayer(RBFRandomLayer):
               neural networks", Neurocomputing 74 (2011), 2502-2510
 
     """
-    # def _grbf(acts, taus):
-    #     """GRBF activation function"""
-
-    #     return np.exp(np.exp(-pow(acts, taus)))
-
-    _grbf = lambda acts, taus: np.exp(np.exp(-pow(acts, taus)))
-
-    _internal_activation_funcs = {'grbf': _grbf}
 
     def __init__(self, n_hidden=20, grbf_lambda=0.001,
                  centers=None, radii=None, random_state=None):
 
-        super(GRBFRandomLayer, self).__init__(n_hidden=n_hidden,
-                                              activation_func='grbf',
-                                              centers=centers, radii=radii,
-                                              random_state=random_state)
+        self._internal_activation_funcs = {'grbf': self._grbf}
+
+        super(GRBFRandomLayer, self).__init__(
+            n_hidden=n_hidden,
+            activation_func='grbf',
+            centers=centers, radii=radii,
+            random_state=random_state
+        )
 
         self.grbf_lambda = grbf_lambda
         self.dN_vals = None
         self.dF_vals = None
         self.tau_vals = None
 
-    # get centers from superclass, then calculate tau_vals
-    # according to ref [1]
+    @staticmethod
+    def _grbf(acts, taus):
+        """GRBF activation function"""
+        return np.exp(np.exp(-pow(acts, taus)))
+
     def _compute_centers(self, X, sparse, rs):
         """Generate centers, then compute tau, dF and dN vals"""
-
+        # get centers from superclass, then calculate tau_vals
+        # according to ref [1]
         super(GRBFRandomLayer, self)._compute_centers(X, sparse, rs)
 
         centers = self.components_['centers']
         sorted_distances = np.sort(squareform(pdist(centers)))
         self.dF_vals = sorted_distances[:, -1]
         self.dN_vals = sorted_distances[:, 1]/100.0
-        #self.dN_vals = 0.0002 * np.ones(self.dF_vals.shape)
 
         tauNum = np.log(np.log(self.grbf_lambda) /
                         np.log(1.0 - self.grbf_lambda))
@@ -535,9 +538,8 @@ class GRBFRandomLayer(RBFRandomLayer):
 
         self._extra_args['taus'] = self.tau_vals
 
-    # get radii according to ref [1]
     def _compute_radii(self):
         """Generate radii"""
-
+        # according to ref [1]
         denom = pow(-np.log(self.grbf_lambda), 1.0/self.tau_vals)
         self.components_['radii'] = self.dF_vals/denom

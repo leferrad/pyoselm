@@ -45,6 +45,7 @@ nosetests.xml
 coverage.xml
 *.cover
 .hypothesis/
+tests/coverage/
 
 # Translations
 *.mo
@@ -60,6 +61,13 @@ instance/
 
 # Scrapy stuff:
 .scrapy
+
+# IDE stuff
+.idea
+.vscode
+
+# pytest stuff
+.pytest_cache
 
 # Sphinx documentation
 docs/_build/
