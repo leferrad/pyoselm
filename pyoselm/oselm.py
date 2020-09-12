@@ -336,9 +336,11 @@ class OSELMClassifier(OSELMRegressor):
 
             Returns an instance of self.
         """
-        self.classes_ = np.unique(y)
-
-        y_bin = self.binarizer.fit_transform(y)
+        if not self.is_fitted:
+            self.classes_ = np.unique(y)
+            y_bin = self.binarizer.fit_transform(y)
+        else:
+            y_bin = self.binarizer.transform(y)
 
         super(OSELMClassifier, self).fit(X, y_bin)
 
