@@ -293,7 +293,7 @@ class OSELMClassifier(OSELMRegressor):
                  n_hidden=20,
                  activation_func='sigmoid',
                  activation_args=None,
-                 binarizer=LabelBinarizer(-1, 1),
+                 binarizer=LabelBinarizer(neg_label=-1, pos_label=1),
                  use_woodbury=False,
                  random_state=123):
 
