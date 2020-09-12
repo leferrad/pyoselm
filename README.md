@@ -34,47 +34,45 @@ Here a simple but complete example of usage. For more information, please check 
 
 ```python
 from pyoselm import OSELMRegressor, OSELMClassifier
-from sklearn.datasets import load_digits, make_regression
-import random
+from sklearn.datasets import load_digits, make_regression 
+from sklearn.model_selection import train_test_split
 
 # --- Regression problem ---
 # Model
-oselmr = OSELMRegressor(n_hidden=20, activation_func='tanh')
+oselmr = OSELMRegressor(n_hidden=20, activation_func='sigmoid', random_state=123)
 # Data
-x, y = make_regression(n_samples=400, n_targets=1, n_features=10)
-n_batch = 20
+X, y = make_regression(n_samples=1000, n_targets=1, n_features=10, random_state=123)   
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=123)
+n_batch = 40
 
 # Fit model with chunks of data
 for i in range(20):
-    x_batch = x[i*n_batch:(i+1)*n_batch]
-    y_batch = y[i*n_batch:(i+1)*n_batch]
-
-    oselmr.fit(x_batch, y_batch)
-    print("Train score for batch %i: %s" % (i+1, str(oselmr.score(x_batch, y_batch))))
+    X_batch = X_train[i*n_batch:(i+1)*n_batch]
+    y_batch = y_train[i*n_batch:(i+1)*n_batch]
+    oselmr.fit(X_batch, y_batch)
+    print("Train score for batch %i: %s" % (i+1, str(oselmr.score(X_batch, y_batch))))
 
 # Results
-print("Train score of total: %s" % str(oselmr.score(x, y)))
+print("Train score of total: %s" % str(oselmr.score(X_train, y_train)))
+print("Test score of total: %s" % str(oselmr.score(X_test, y_test)))
 
 # --- Classification problem ---
 # Model 
-oselmc = OSELMClassifier(n_hidden=20, activation_func='sigmoid')
+oselmc = OSELMClassifier(n_hidden=20, activation_func='sigmoid', random_state=123)
 # Data
-x, y = load_digits(n_class=10, return_X_y=True)
-
-# Shuffle data (to have batches with more than one class)
-zip_x_y = zip(x, y)
-random.shuffle(zip_x_y)
-x, y = [x_y[0] for x_y in zip_x_y], [x_y[1] for x_y in zip_x_y]
+X, y = load_digits(n_class=5, return_X_y=True) 
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=123)
 
 # Sequential learning
-# The first batch of data should have the same size as neurons in the model to achieve the 1st phase (boosting)
-batches_x = [x[:oselmc.n_hidden]] + [[x_i] for x_i in x[oselmc.n_hidden:]]
-batches_y = [y[:oselmc.n_hidden]] + [[y_i] for y_i in y[oselmc.n_hidden:]]
+# The first batch of data must have the same size as n_hidden to achieve the first phase (boosting)
+batches_x = [X_train[:oselmc.n_hidden]] + [[x_i] for x_i in X_train[oselmc.n_hidden:]]
+batches_y = [y_train[:oselmc.n_hidden]] + [[y_i] for y_i in y_train[oselmc.n_hidden:]]
 
 for b_x, b_y in zip(batches_x, batches_y):
     oselmc.fit(b_x, b_y)
 
-print("Train score of total: %s" % str(oselmc.score(x, y)))
+print("Train score of total: %s" % str(oselmc.score(X_train, y_train)))
+print("Test score of total: %s" % str(oselmc.score(X_test, y_test)))
 
 ```
 
