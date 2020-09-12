@@ -20,6 +20,11 @@ setup(
             'pytest-pep8==1.0.6',
             'pytest-cov==2.10.1',
         ],
+        'docs': [
+            'sphinx==3.2.1',
+            'sphinx-rtd-theme==0.5.0',
+            'msmb_theme==1.2.0',
+        ],
         'examples': [
 
         ]
