@@ -53,7 +53,7 @@ class OSELMRegressor(BaseEstimator, RegressorMixin):
     OSELMRegressor is a regressor based on Online Sequential
     Extreme Learning Machine (OS-ELM).
 
-    This type of model is an ELM that....
+    This type of model is an ELM that....   ...
     [1][2]
 
     Parameters
@@ -203,6 +203,12 @@ class OSELMRegressor(BaseEstimator, RegressorMixin):
 
     @property
     def is_fitted(self):
+        """Check if model was fitted
+
+        Returns
+        -------
+            boolean, True if model is fitted
+        """
         return self.beta is not None
 
     def predict(self, X):
@@ -232,14 +238,14 @@ class OSELMRegressor(BaseEstimator, RegressorMixin):
 
 class OSELMClassifier(OSELMRegressor):
     """
-    ELMClassifier is a classifier based on the Extreme Learning Machine.
+    OSELMClassifier is a classifier based on the Extreme Learning Machine.
 
     An Extreme Learning Machine (ELM) is a single layer feedforward
     network with a random hidden layer components and ordinary linear
     least squares fitting of the hidden->output weights by default.
     [1][2]
 
-    ELMClassifier is an ELMRegressor subclass that first binarizes the
+    OSELMClassifier is an OSELMRegressor subclass that first binarizes the
     data, then uses the superclass to compute the decision function that
     is then unbinarized to yield the prediction.
 
