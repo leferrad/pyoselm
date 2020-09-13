@@ -163,11 +163,6 @@ class GenELMRegressor(BaseELM, RegressorMixin):
 
         return self
 
-    def _get_predictions(self):
-        """Get predictions with the supplied regressor"""
-        preds = self.regressor.predict(self.hidden_activations_)
-        return preds
-
     def predict(self, X):
         """
         Predict values using the model
@@ -188,7 +183,7 @@ class GenELMRegressor(BaseELM, RegressorMixin):
         self.hidden_activations_ = self.hidden_layer.transform(X)
 
         # compute output predictions for new hidden activations
-        predictions = self._get_predictions()
+        predictions = self.regressor.predict(self.hidden_activations_)
 
         return predictions
 
@@ -487,6 +482,7 @@ class ELMRegressor(BaseEstimator, RegressorMixin):
         return self._genelm_regressor.predict(X)
 
 
+# TODO: inherit from BaseELMClassifier
 class ELMClassifier(ELMRegressor):
     """
     Classification model based on Extreme Learning Machine.
