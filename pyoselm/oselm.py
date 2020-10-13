@@ -10,6 +10,7 @@ import warnings
 
 import numpy as np
 from scipy.linalg import pinv2
+from scipy.sparse import eye
 from scipy.special import softmax
 from sklearn.base import RegressorMixin, BaseEstimator
 from sklearn.metrics import accuracy_score
@@ -143,7 +144,7 @@ class OSELMRegressor(BaseEstimator, RegressorMixin):
                 warnings.warn("Large input of %i rows and use_woodbury=True "\
                               "may throw OOM errors" % len(H))
 
-            M = np.eye(len(H)) + multiple_safe_sparse_dot(H, self.P, H.T)
+            M = eye(len(H)) + multiple_safe_sparse_dot(H, self.P, H.T)
             self.P -= multiple_safe_sparse_dot(self.P, H.T, pinv2(M), H, self.P)
             e = y - safe_sparse_dot(H, self.beta)
             self.beta += multiple_safe_sparse_dot(self.P, H.T, e)
@@ -168,7 +169,7 @@ class OSELMRegressor(BaseEstimator, RegressorMixin):
             self.P += safe_sparse_dot(H.T, H)
             P_inv = pinv2(self.P)
             e = y - safe_sparse_dot(H, self.beta)
-            self.beta += multiple_safe_sparse_dot(P_inv, H.T, e)
+            self.beta = self.beta + multiple_safe_sparse_dot(P_inv, H.T, e)
 
     def fit(self, X, y):
         """
@@ -200,6 +201,32 @@ class OSELMRegressor(BaseEstimator, RegressorMixin):
             self._fit_iterative(X, y)
 
         return self
+
+    def partial_fit(self, X, y):
+        """
+        Fit the model using X, y as training data. Alias for fit() method.
+
+        Notice that this function could be used for n_samples==1 (online learning),
+        except for the first time the model is fitted, where it needs at least as
+        many rows as 'n_hidden' configured.
+
+        Parameters
+        ----------
+        X : {array-like, sparse matrix} of shape [n_samples, n_features]
+            Training vectors, where n_samples is the number of samples
+            and n_features is the number of features.
+
+        y : array-like of shape [n_samples, n_outputs]
+            Target values (class labels in classification, real numbers in
+            regression)
+
+        Returns
+        -------
+        self : object
+
+            Returns an instance of self.
+        """
+        return self.fit(X, y)
 
     @property
     def is_fitted(self):
