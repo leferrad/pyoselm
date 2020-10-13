@@ -10,15 +10,7 @@
 
 **pyoselm** is a Python library for machine learning models with Extreme Machine Learning (ELM) and Online Sequential Machine Learning (OS-ELM). It allows to fit models for regression and classification tasks, both in batch and online learning (either row-by-row or chunk-by-chunk).
 
-This library offers a scikit-learn like API for easy usage, and the implementation is strongly based on the following repos:
-
-- https://github.com/ExtremeLearningMachines/ELM-MATLAB-and-Online.Sequential.ELM
-- https://github.com/dclambert/Python-ELM
-
-**Original publication:** 
-
-> Huang, G. B., Liang, N. Y., Rong, H. J., Saratchandran, P., & Sundararajan, N. (2005). 
-  On-Line Sequential Extreme Learning Machine. Computational Intelligence, 2005, 232-237.
+This library offers a scikit-learn like API for easy usage. For more details about setup and usage, check the [documentation](http://readthedocs.org/projects/pyoselm/).
 
 ### Setup
 
@@ -30,14 +22,14 @@ $ pip install pyoselm
 
 ### Usage
 
-Here a simple but complete example of usage. For more information, please check the documentation.
+Here a simple but complete example of usage.
 
 ```python
 from pyoselm import OSELMRegressor, OSELMClassifier
 from sklearn.datasets import load_digits, make_regression 
 from sklearn.model_selection import train_test_split
 
-# --- Regression problem ---
+print("Regression task")
 # Model
 oselmr = OSELMRegressor(n_hidden=20, activation_func='sigmoid', random_state=123)
 # Data
@@ -54,9 +46,11 @@ for i in range(20):
 
 # Results
 print("Train score of total: %s" % str(oselmr.score(X_train, y_train)))
-print("Test score of total: %s" % str(oselmr.score(X_test, y_test)))
+print("Test score of total: %s" % str(oselmr.score(X_test, y_test)))  
+print("")
 
-# --- Classification problem ---
+
+print("Classification task")
 # Model 
 oselmc = OSELMClassifier(n_hidden=20, activation_func='sigmoid', random_state=123)
 # Data
@@ -73,7 +67,4 @@ for b_x, b_y in zip(batches_x, batches_y):
 
 print("Train score of total: %s" % str(oselmc.score(X_train, y_train)))
 print("Test score of total: %s" % str(oselmc.score(X_test, y_test)))
-
 ```
-
-> NOTE: Chuck-by-chunk is faster than one-by-one
