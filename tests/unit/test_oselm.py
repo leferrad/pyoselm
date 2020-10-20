@@ -35,7 +35,7 @@ def test_oselm_regressor(n_hidden, activation_func, use_woodbury):
     assert score > 0.0, "Score of model is lower than expected"
 
     # partial fit
-    model.fit(X, y)
+    model.partial_fit(X, y)
 
     # predict
     y_pred = model.predict(X)
@@ -80,14 +80,18 @@ def test_oselm_classifier(n_hidden, activation_func, binarizer):
     score = model.score(X, y)
     assert score > 0.0, "Score of model is lower than expected"
 
-    # fit again
-    model.fit(X, y)
+    # partial fit
+    model.partial_fit(X, y)
 
     # predict
     y_pred = model.predict(X)
     set_y = set(y)
     assert all([yy in set_y for yy in y_pred]), \
         "Predicted values out of expected range"
+
+    # score
+    score = model.score(X, y)
+    assert score > 0.0, "Score of model is lower than expected"
 
 
 def test_multiple_safe_sparse_dot():
