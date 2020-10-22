@@ -22,9 +22,9 @@ You can also install the development version from master branch of Git repositor
 Testing
 -------
 
-Using pytest and pytest-bdd
+Tests are developed using `pytest <https://docs.pytest.org/en/stable/>`_ and its plugins.
 
-To run all tests in ``tests/`` or ``tests/unit/`` or ``tests/functional``
+To run all tests in ``tests/``, execute:
 
 .. code-block:: bash
 

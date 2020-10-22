@@ -6,7 +6,17 @@ This sections will explain the concepts behind the implementation of this librar
 Basic Concepts
 --------------
 
-Extreme Learning Machine (ELM) is a simple algorithm for Single-Layer Feed-Forward Neural Network (SLFN). It randomly selects the input weights and biases of the hidden nodes instead of learning these parameters. To do that, it doesn’t require gradient-based `backpropagation <https://en.wikipedia.org/wiki/Backpropagation>`_  but it uses `Moore-Penrose generalized inverse <https://en.wikipedia.org/wiki/Moore%E2%80%93Penrose_inverse>`_ to set these weights.
+The basis of the implementation is shown through these sections with theory content:
+
+- :ref:`Extreme Learning Machine`
+- :ref:`Online Sequential Extreme Learning Machine`
+
+
+Extreme Learning Machine
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Extreme Learning Machine (ELM) [1] is a simple algorithm for Single-Layer Feed-Forward Neural Network (SLFN). It randomly selects the input weights and biases of the hidden nodes instead of learning these parameters. To do that, it doesn’t require gradient-based `backpropagation <https://en.wikipedia.org/wiki/Backpropagation>`_  but it uses `Moore-Penrose generalized inverse <https://en.wikipedia.org/wiki/Moore%E2%80%93Penrose_inverse>`_ to set these weights.
+According to their creators, these models are able to produce good generalization performance and learn thousands of times faster than networks trained using backpropagation. In literature, it also shows that these models can outperform support vector machines in both classification and regression applications.
 
 Given a single hidden layer of ELM, suppose that the output function of the i-th hidden node is :math:`{h_{i}(\mathbf{x})=G(\mathbf {a} _{i},b_{i},\mathbf {x} )}`, where :math:`{\mathbf {a}_{i}}` and :math:`{{b}_{i}}` are the parameters of the i-th hidden node and *G* is an activation function. The output function of the ELM for SLFNs with *L* hidden nodes is:
 
@@ -16,74 +26,57 @@ Given a single hidden layer of ELM, suppose that the output function of the i-th
 
 :math:`{\displaystyle {\mathbf {H}}=\left[{\begin{matrix}{\mathbf {h}}({\mathbf {x}}_{1})\\\vdots \\{\mathbf {h}}({\mathbf {x}}_{N})\end{matrix}}\right]=\left[{\begin{matrix}G({\mathbf {a}}_{1},b_{1},{\mathbf {x}}_{1})&\cdots &G({\mathbf {a}}_{L},b_{L},{\mathbf {x}}_{1})\\\vdots &\vdots &\vdots \\G({\mathbf {a}}_{1},b_{1},{\mathbf {x}}_{N})&\cdots &G({\mathbf {a}}_{L},b_{L},{\mathbf {x}}_{N})\end{matrix}}\right]}`
 
-and :math:`{\displaystyle \mathbf {T} }` is the training data target matrix: :math:`{\displaystyle {\mathbf {T}}=\left[{\begin{matrix}{\mathbf {t}}_{1}\\\vdots \\{\mathbf {t}}_{N}\end{matrix}}\right]}`
+and :math:`{\displaystyle \mathbf {T} }` is the training data target matrix: :math:`{\displaystyle {\mathbf {T}}=\left[{\begin{matrix}{{t}}_{1}\\\vdots \\{{t}}_{N}\end{matrix}}\right]}`
 
-Generally speaking, ELM is a kind of regularization neural networks but with non-tuned hidden layer mappings (formed by either random hidden nodes, kernels or other implementations), its objective function is:
+and :math:`{\displaystyle \mathbf {\beta} }` is the weight vector: :math:`{\displaystyle {\mathbf {\beta}}=\left[{\begin{matrix}{ {\beta}}_{1}\\\vdots \\{ {\beta}}_{N}\end{matrix}}\right]}`
 
-{\displaystyle {\text{Minimize: }}\|{\boldsymbol {\beta }}\|_{p}^{\sigma _{1}}+C\|{\bf {H}}{\boldsymbol {\beta }}-{\bf {T}}\|_{q}^{\sigma _{2}}} {\displaystyle {\text{Minimize: }}\|{\boldsymbol {\beta }}\|_{p}^{\sigma _{1}}+C\|{\bf {H}}{\boldsymbol {\beta }}-{\bf {T}}\|_{q}^{\sigma _{2}}}
+The values for weight matrix :math:`{\displaystyle {\mathbf {\beta}}}` are obtained through random sampling. It has been mathematically proved that SLFNs with random hidden nodes have the universal approximation capability, the hidden nodes can be randomly generated independent of the training data and remain fixed; then the hidden layer output matrix :math:`{\mathbf H}` is a constant matrix. Thus, training an SLFN is simply equivalent to finding a least squares solution :math:`{\displaystyle \mathit{\mathbf{\widehat{\beta}}} }` of the linear system:
 
-where {\displaystyle \sigma _{1}>0,\sigma _{2}>0,p,q=0,{\frac {1}{2}},1,2,\cdots ,+\infty } {\displaystyle \sigma _{1}>0,\sigma _{2}>0,p,q=0,{\frac {1}{2}},1,2,\cdots ,+\infty }.
+:math:`{\displaystyle \| \mathbf {H} \mathit{\mathbf{\widehat{\beta}}} -  \mathbf {T} \| = min_\beta \| \mathbf {H} \mathit{\mathbf{\beta}} -  \mathbf {T} \|}`
 
-Different combinations of {\displaystyle \sigma _{1}} \sigma _{1}, {\displaystyle \sigma _{2}} \sigma _{2}, {\displaystyle p} p and {\displaystyle q} q can be used and result in different learning algorithms for regression, classification, sparse coding, compression, feature learning and clustering.
+where :math:`{\displaystyle \| . \|}`  is a norm in Euclidean space. The ELM adopts the smallest norm least squares solution of the above linear system as the output weights; that is,
 
-As a special case, a simplest ELM training algorithm learns a model of the form (for single hidden layer sigmoid neural networks):
+:math:`{\displaystyle \mathit{\mathbf{\widehat{\beta}}} = \mathbf{H}^{+}\mathbf{T}}`,
 
-{\displaystyle \mathbf {\hat {Y}} =\mathbf {W} _{2}\sigma (\mathbf {W} _{1}x)} {\mathbf  {{\hat  {Y}}}}={\mathbf  {W}}_{2}\sigma ({\mathbf  {W}}_{1}x)
-where W1 is the matrix of input-to-hidden-layer weights, {\displaystyle \sigma } \sigma  is an activation function, and W2 is the matrix of hidden-to-output-layer weights. The algorithm proceeds as follows:
+where :math:`\mathbf{H}^{+}`  is the Moore-Penrose generalized inverse of matrix :math:`\mathbf{H}`.
+If :math:`\mathbf{H}^{T} \mathbf{H}` is nonsingular, then the equation can be written as
 
-Fill W1 with random values (e.g., Gaussian random noise);
-estimate W2 by least-squares fit to a matrix of response variables Y, computed using the pseudoinverse ⋅+, given a design matrix X:
-{\displaystyle \mathbf {W} _{2}=\sigma (\mathbf {W} _{1}\mathbf {X} )^{+}\mathbf {Y} } {\mathbf  {W}}_{2}=\sigma ({\mathbf  {W}}_{1}{\mathbf  {X}})^{+}{\mathbf  {Y}}
+:math:`{\displaystyle \mathit{\mathbf{\widehat{\beta}}} = \mathbf{H}^{+}\mathbf{T}= \left( \mathbf{H}^{T} \mathbf{H} \right)^{-1} \mathbf{H}^{T} \mathbf{T}}`
 
+The traditional implementation of this algorithm needs all the training data available to build the model (**batch learning**). In many applications, it is very common that the training data can only be obtained one by one or chunk by chunk. If batch learning algorithms are performed each time new training data is available, the learning process will be very time consuming.
 
-Algorithm
+Online Sequential Extreme Learning Machine
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-1. Create the random weights matrix W and bias b for the input layer.
-The size of the weight matrix and bias is (j x k) and (1 x k) where j is the number of hidden nodes and k is the number of input nodes.
+An online version of ELM named OS-ELM is implemented to learn the training samples successively and incrementally. The learning procedure of OS-ELM consists of an initialization phase and a following sequential learning phase, and the one-by-one OS-ELM is summarized as follows.
 
-2. Calculate the hidden layer output matrix
-The initial hidden layer output matrix is calculated by multiplying X which is training data with transpose of weight matrix
+In initialization phase, given an initial training set, the initial output weights are given by
 
+:math:`{\displaystyle \mathit{\mathbf{\beta}}_{k-1} = \mathbf{P}_{k-1} \mathbf{H^{T}}_{k-1} \mathbf{T}_{k-1}}`,
 
+where :math:`{\displaystyle \mathbf{P}_{k-1}} = \left( \mathbf{H^{T}}_{k-1} \mathbf{H}_{k-1} \right)^{-1}`, :math:`{\displaystyle \mathbf{H}_{k-1}} = \left[ \mathbf{h^{T}}_{1} \mathbf{h^{T}}_{2} \dots \mathbf{h^{T}}_{k-1} \right]^T` and :math:`{\displaystyle \mathbf{T}_{k-1}} = \left[ \mathbf{t^{T}}_{1} \mathbf{t^{T}}_{2} \dots \mathbf{t^{T}}_{k-1} \right]^T`
 
-3. Choose activation function
-You can choose any activation function that you want. But in this example I will choose sigmoid activation function because it is easy to implement.
-Image for post
-4. Calculate the Moore-Penrose pseudoinverse
-Several methods can be used to calculate the Moore–Penrose generalized inverse of H. These methods may include but are not limited to orthogonal projection, orthogonalization method, iterative method, and singular value decomposition (SVD).
-Image for post
-5. Calculate the output weight matrix beta
-Image for post
-6. Repeat step 2 for the testing dataset, creating a new H matrix. After that, create the result matrix called ŷ. We use the already known beta matrix.
-Image for post
+In the sequential learning phase, the recursive least square (RLS) algorithm is used to update the output weights in a recursive way. Then for another new sample *k*, the output weights update equations are determined by
 
+:math:`{\displaystyle \mathbf{P}_{k} = \mathbf{P}_{k-1} - \frac{\mathbf{P}_{k-1} \mathbf{h^{T}}_{k} \mathbf{h}_k \mathbf{P}_{k-1}} {1 + \mathbf{h}_k \mathbf{P}_{k-1} \mathbf{h^{T}}_{k}} }`,
 
-According to their creators, these models are able to produce good generalization performance and learn thousands of times faster than networks trained using backpropagation. In literature, it also shows that these models can outperform support vector machines in both classification and regression applications.
+:math:`{\displaystyle \mathit{\mathbf{\beta}}_{k} = \mathit{\mathbf{\beta}}_{k-1} + \mathbf{P}_{k} \mathbf{h^{T}}_{k} \left( \mathit{t}_{k} - \mathbf{h}_{k} \mathit{\mathbf{\beta}}_{k-1} \right) }`,
 
-The traditional implementation of this algorithm needs all the training data available to build the model (**batch learning**). In many applications, it is very common that the training data can only be obtained one by one or chunk by chunk. If batch learning algorithms are performed each time new training data is available, the learning process will be very time consuming. An Online Sequential Extreme Learning Machine (OS-ELM) can learn the sequential training observations online at arbitrary length (one by one or chunk by chunk). New arrived training observations are learned to modify the
-model of the SLFNs. As soon as the learning procedure for the arrived observations is
-completed, the data is discarded. Moreover, it has no prior knowledge about the amount
+It can be seen that the output weights of OS-ELM are recursively updated based on the intermediate results in the last iteration and the newly arrived data, which can be discarded immediately as soon as they have been learnt, so the computation overhead and the memory requirement of the algorithm are greatly reduced. The above one-by-one OSELM algorithm can be easily extended to chunk-by-chunk type.
+
+As soon as the learning procedure for the arrived observations is completed, the data is discarded. Moreover, it has no prior knowledge about the amount
 of the observations which will be presented. Therefore, OS-ELM is an elegant sequential
 learning algorithm which can handle both the RBF and additive nodes in the
-same framework and can be used to both the classification and function regression problems. OS-ELM proves to be a very fast and accurate online sequential learning
-algorithm[9-11], which can provide better generalization performance in faster speed
-compared with other sequential learning algorithms such as GAP-RBF, GGAP-RBF,
-SGBP, RAN, RANEKF and MRAN etc
+same framework and can be used to both the classification and function regression problems.
 
 
-
-Step-by-step implementation ??
-https://medium.com/datadriveninvestor/extreme-learning-machine-for-simple-classification-e776ad797a3c
-
-Least squares explanation
-https://medium.com/datadriveninvestor/extreme-learning-machines-9c8be01f6f77
-
+Implementation
+~~~~~~~~~~~~~~
 
 The implementation for this library is strongly based on the following code repositories:
 
 - https://github.com/ExtremeLearningMachines/ELM-MATLAB-and-Online.Sequential.ELM
 - https://github.com/dclambert/Python-ELM
-
 
 
 Usage
@@ -107,8 +100,6 @@ Regression task with ELM (batch learning)
 In this example, the `diabetes dataset <https://scikit-learn.org/stable/datasets/index.html#diabetes-dataset>`_ is loaded to perform a regression task where ELM is compared with other 2 algorithms that normally perform well in regression.
 Notice the same scikit-learn API used to fit models and get scores.
 We can see that ELM model obtained the best results in the test dataset.
-
-Batch learning, so all training data is used in a single fashion
 
 .. code-block:: python
 
@@ -150,16 +141,14 @@ Output:
     Test score for 'extra_tree': 0.24042160732597384
 
 
-
-Normalization often improve results
-
-
 Classification task with ELM (batch learning)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-the `hand-written digits datasets <https://scikit-learn.org/stable/datasets/index.html#optical-recognition-of-handwritten-digits-dataset>`_
+In this example, the dataset used is `hand-written digits dataset <https://scikit-learn.org/stable/datasets/index.html#optical-recognition-of-handwritten-digits-dataset>`_ for a task of images classification.
 
-Every feature is in range [0, 255] so scale ...
+For ELM algorithms, normalization often improve results (since it can avoid large numbers processed in algebraic operations). In this dataset, every feature is in range [0, 16] so we will scale values to range [0, 1].
+
+Here the test results for ELM are slightly better than SVC.
 
 .. code-block:: python
 
@@ -170,7 +159,7 @@ Every feature is in range [0, 255] so scale ...
     from sklearn.svm import SVC
 
     X, y = load_digits(return_X_y=True)
-    X /= 16.  # scale range
+    X /= 16.  # scale values
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=123)
 
     models = {
@@ -207,12 +196,14 @@ Output:
 Regression task with OS-ELM (online learning)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Here, online learning algorithms are used
+Here, online learning algorithms are used to learn a dataset in different chunk settings: from one-by-one to chunk-by-chunk.
 
-`california housing <https://scikit-learn.org/stable/datasets/index.html#california-housing-dataset>`_
+The dataset used is `california housing <https://scikit-learn.org/stable/datasets/index.html#california-housing-dataset>`_, a hard one.
 
+As pre-processing, standard scaling is applied over the feature values.
 
-Standard scaling is applied
+We can see that, for these settings, OS-ELM is by far the slowest one but at least it has wide better results than the other algorithms in every setting.
+Notice that chunk-by-chunk is faster than row-by-row, and results are almost equal across settings.
 
 .. code-block:: python
 
@@ -336,16 +327,12 @@ Output:
     Time elapsed: 0.011 seconds
 
 
-Notice that chunk-by-chunk is faster than row-by-row, and results are almost equal.
-
-ELM is slower but has better performance
-
-
 Classification task with OS-ELM (online learning)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-`forest covertypes <https://scikit-learn.org/stable/datasets/index.html#forest-covertypes>`_
+Finally, let's try OS-ELM in a classification task, in this case with `forest covertypes <https://scikit-learn.org/stable/datasets/index.html#forest-covertypes>`_
 
+We can see that again OS-ELM has slower but better results than the other online algorithms.
 
 .. code-block:: python
 
@@ -447,18 +434,13 @@ Output:
 References
 ----------
 
-[1] Extreme learning machine: Theory and applications Guang-Bin Huang, Qin-Yu Zhu, Chee-Kheong Siew.
-
-
-**Original publication:**
-
-> Huang, G. B., Liang, N. Y., Rong, H. J., Saratchandran, P., & Sundararajan, N. (2005).
+- Extreme learning machine: Theory and applications Guang-Bin Huang, Qin-Yu Zhu, Chee-Kheong Siew.
+- "Extreme learning machine" in `Wikipedia <https://en.wikipedia.org/wiki/Extreme_learning_machine>`_
+- Huang, G. B., Liang, N. Y., Rong, H. J., Saratchandran, P., & Sundararajan, N. (2005).
   On-Line Sequential Extreme Learning Machine. Computational Intelligence, 2005, 232-237.
-
-
-Liang N Y, Huang G B, Saratchandran P, et al. A fast and accurate online sequential learning
-algorithm for feedforward networks[J]. Neural Networks, IEEE Transactions on, 2006,
-17(6): 1411-1423.
-
-> Huang, G. B., Liang, N. Y., Rong, H. J., Saratchandran, P., & Sundararajan, N. (2005).
-  On-Line Sequential Extreme Learning Machine. Computational Intelligence, 2005, 232-237.
+- Guo, W., Xu, T., Tang, K., Yu, J., & Chen, S. (2018). Online sequential extreme learning machine
+  with generalized regularization and adaptive forgetting factor for time-varying system prediction.
+  Mathematical Problems in Engineering, 2018.
+- Liang N Y, Huang G B, Saratchandran P, et al. A fast and accurate online sequential learning
+  algorithm for feedforward networks[J]. Neural Networks, IEEE Transactions on, 2006,
+  17(6): 1411-1423.
