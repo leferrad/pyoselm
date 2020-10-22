@@ -12,6 +12,8 @@
 
 This library offers a scikit-learn like API for easy usage. For more details about setup and usage, check the [documentation](http://readthedocs.org/projects/pyoselm/).
 
+> **IMPORTANT:** This library was developed as a research project. It may not be production-ready, so please be aware of that.
+
 ### Setup
 
 The easiest way to install this library is using `pip`:
