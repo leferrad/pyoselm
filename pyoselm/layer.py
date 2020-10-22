@@ -1,4 +1,4 @@
-"""Module to provide random layers for ELM models"""
+"""Module to provide random layers for ELM and OS-ELM models"""
 
 # ===================================================
 # Acknowledgement:
