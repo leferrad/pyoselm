@@ -10,7 +10,7 @@ from pyoselm.elm import (GenELMRegressor, GenELMClassifier,
 from pyoselm.layer import RBFRandomLayer
 
 
-@pytest.mark.parametrize("hidden_layer", [None, RBFRandomLayer()])
+@pytest.mark.parametrize("hidden_layer", [None, RBFRandomLayer(random_state=123)])
 @pytest.mark.parametrize("regressor", [None, LinearRegression()])
 def test_gen_elm_regressor(hidden_layer, regressor):
     # get data
@@ -33,10 +33,10 @@ def test_gen_elm_regressor(hidden_layer, regressor):
     assert -1.0 < score <= 1.0, "Score of model is not in expected range"
 
 
-@pytest.mark.parametrize("hidden_layer", [None, RBFRandomLayer()])
+@pytest.mark.parametrize("hidden_layer", [None, RBFRandomLayer(random_state=123)])
 @pytest.mark.parametrize("binarizer", [None,
-                                       LabelBinarizer(0, 1),
-                                       LabelBinarizer(-1, 1)])
+                                       LabelBinarizer(neg_label=0, pos_label=1),
+                                       LabelBinarizer(neg_label=-1, pos_label=1)])
 @pytest.mark.parametrize("regressor", [None, LinearRegression()])
 def test_gen_elm_classifier(hidden_layer, binarizer, regressor):
     # get data
@@ -72,8 +72,8 @@ def test_elm_regressor(n_hidden, activation_func, regressor):
     # build model
     model = ELMRegressor(n_hidden=n_hidden,
                          activation_func=activation_func,
-                         regressor=regressor)
-
+                         regressor=regressor,
+                         random_state=123)
     # fit model
     model.fit(X, y)
 
@@ -102,7 +102,8 @@ def test_elm_classifier(n_hidden, activation_func, binarizer, regressor):
     model = ELMClassifier(n_hidden=n_hidden,
                           activation_func=activation_func,
                           binarizer=binarizer,
-                          regressor=regressor)
+                          regressor=regressor,
+                          random_state=123)
 
     # fit model
     model.fit(X, y)

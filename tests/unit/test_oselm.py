@@ -19,7 +19,8 @@ def test_oselm_regressor(n_hidden, activation_func, use_woodbury):
     # build model
     model = OSELMRegressor(n_hidden=n_hidden,
                            activation_func=activation_func,
-                           use_woodbury=use_woodbury)
+                           use_woodbury=use_woodbury,
+                           random_state=123)
 
     # fit model
     model.fit(X, y)
@@ -60,7 +61,8 @@ def test_oselm_classifier(n_hidden, activation_func, binarizer):
     # build model
     model = OSELMClassifier(n_hidden=n_hidden,
                             activation_func=activation_func,
-                            binarizer=binarizer)
+                            binarizer=binarizer,
+                            random_state=123)
 
     # fit model
     model.fit(X, y)
