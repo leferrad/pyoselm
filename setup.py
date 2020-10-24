@@ -19,6 +19,7 @@ setup(
             'pytest==6.0.1',
             'pytest-pep8==1.0.6',
             'pytest-cov==2.10.1',
+            'pytest-bdd==3.4.0',
         ],
         'docs': [
             'sphinx==3.2.1',
