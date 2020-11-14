@@ -14,7 +14,7 @@ from pyoselm.layer import RBFRandomLayer
 @pytest.mark.parametrize("regressor", [None, LinearRegression()])
 def test_gen_elm_regressor(hidden_layer, regressor):
     # get data
-    X, y = make_regression(n_samples=100, n_targets=1, n_features=10)
+    X, y = make_regression(n_samples=100, n_targets=1, n_features=10, random_state=123)
 
     # build model
     model = GenELMRegressor(hidden_layer=hidden_layer, regressor=regressor)
@@ -67,7 +67,7 @@ def test_gen_elm_classifier(hidden_layer, binarizer, regressor):
 @pytest.mark.parametrize("regressor", [None, LinearRegression()])
 def test_elm_regressor(n_hidden, activation_func, regressor):
     # get data
-    X, y = make_regression(n_samples=100, n_targets=1, n_features=10)
+    X, y = make_regression(n_samples=100, n_targets=1, n_features=10, random_state=123)
 
     # build model
     model = ELMRegressor(n_hidden=n_hidden,
@@ -126,7 +126,7 @@ def test_elm_classifier(n_hidden, activation_func, binarizer, regressor):
 
 def test_elm_regressor_reproducible_results():
     # get data
-    X, y = make_regression(n_samples=100, n_targets=1, n_features=10)
+    X, y = make_regression(n_samples=100, n_targets=1, n_features=10, random_state=123)
 
     # build model 1
     model = ELMRegressor(random_state=123)

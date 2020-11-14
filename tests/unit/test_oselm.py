@@ -14,7 +14,7 @@ from pyoselm.oselm import OSELMClassifier, OSELMRegressor, multiple_safe_sparse_
 @pytest.mark.parametrize("use_woodbury", [False, True])
 def test_oselm_regressor(n_hidden, activation_func, use_woodbury):
     # get data
-    X, y = make_regression(n_samples=100, n_targets=1, n_features=10)
+    X, y = make_regression(n_samples=100, n_targets=1, n_features=10, random_state=123)
 
     # build model
     model = OSELMRegressor(n_hidden=n_hidden,
@@ -141,7 +141,7 @@ def test_oselm_bad_path():
 @pytest.mark.skip("Very expensive test")
 def test_oselm_fit_woodbury_large_input():
     n = 20e3
-    X, y = make_regression(n_samples=int(n), n_targets=1, n_features=10)
+    X, y = make_regression(n_samples=int(n), n_targets=1, n_features=10, random_state=123)
 
     model = OSELMRegressor(use_woodbury=True)
 
