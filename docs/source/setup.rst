@@ -1,7 +1,7 @@
 Setup
 =====
 
-``pyoselm`` supports Python 3.5+.
+``pyoselm`` supports Python 3.6+.
 
 Installing
 ----------
