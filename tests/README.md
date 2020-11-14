@@ -46,9 +46,9 @@ Install the dependencies for `tests` through:
     e.g: `pytest tests/system`
 
 
-- To execute system tests with specific tags: "pytest tests/system/ -k <tag>" where tag is a tag added in the test case or .feature file
+- To execute system tests with specific markets: "pytest -m <tag> tests/system/" where tag is a tag added in the test case or .feature file
 
-    e.g.: `pytest tests/system/ -k hook`
+    e.g.: `pytest -m elm tests/system/`
 
 
 
