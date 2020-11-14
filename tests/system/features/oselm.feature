@@ -31,7 +31,7 @@ Feature: Fit and validate an OSELMRegressor model with input data
     Then I compute the score in train and test sets 
     And the results are very good
 
-  @classification @oselm
+  @classification @oselm @expensive
   Scenario: Fit an OSELMClassifier with real data (hard)
     Given the dataset 'covertype'
     And a pre-processing pipeline
@@ -40,7 +40,7 @@ Feature: Fit and validate an OSELMRegressor model with input data
     Then I compute the score in train and test sets
     And the results are good enough
 
-  @regression @oselm
+  @regression @oselm @expensive
   Scenario: Fit an OSELMRegressor with toy data in online fashion, row by row
     Given the dataset 'boston'
     And a pre-processing pipeline
@@ -49,7 +49,7 @@ Feature: Fit and validate an OSELMRegressor model with input data
     Then I compute the score in train and test sets
     And the results are good enough
 
-  @regression @oselm
+  @regression @oselm  @expensive
   Scenario: Fit an OSELMRegressor with toy data in online fashion, chunk by chunk
     Given the dataset 'boston'
     And a pre-processing pipeline

@@ -4,6 +4,7 @@ python:
   - "3.6"
   - "3.7"
   - "3.8"
+  - "3.9"
 
 notifications:
   email:
@@ -21,7 +22,7 @@ install:
 
 script:
   # run tests
-  - pytest --cov=pyoselm --cov-report=term --cov-report=html:tests/coverage tests/
+  - pytest --cov=pyoselm --cov-report=term --cov-report=html:tests/coverage -m "not expensive" tests/
 
 after_success:
   - codecov # submit coverage
