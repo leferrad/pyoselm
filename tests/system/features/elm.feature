@@ -9,7 +9,7 @@ Feature: Fit and validate an ELMRegressor model with input data
     Given the dataset 'boston'
     And a pre-processing pipeline
     And an ELMRegressor model
-    When I fit the pipeline and the ELMRegressor
+    When I fit the pipeline and the model
     Then I compute the score in train and test sets 
     And the results are very good
 
@@ -18,10 +18,26 @@ Feature: Fit and validate an ELMRegressor model with input data
     Given the dataset 'california'
     And a pre-processing pipeline
     And an ELMRegressor model
-    When I fit the pipeline and the ELMRegressor
+    When I fit the pipeline and the model
     Then I compute the score in train and test sets 
     And the results are good enough
 
-   # TODO: classification
-   # TODO: Scenario: Predict
+  @classification @elm
+  Scenario: Fit an ELMClassifier with toy data (easy)
+    Given the dataset 'iris'
+    And a pre-processing pipeline
+    And an ELMClassifier model
+    When I fit the pipeline and the model
+    Then I compute the score in train and test sets
+    And the results are very good
+
+  @classification @elm
+  Scenario: Fit an ELMClassifier with real data (hard)
+    Given the dataset 'covertype'
+    And a pre-processing pipeline
+    And an ELMClassifier model
+    When I fit the pipeline and the model
+    Then I compute the score in train and test sets
+    And the results are good enough
+
 

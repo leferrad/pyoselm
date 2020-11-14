@@ -9,7 +9,7 @@ Feature: Fit and validate an OSELMRegressor model with input data
     Given the dataset 'boston'
     And a pre-processing pipeline
     And an OSELMRegressor model
-    When I fit the pipeline and the OSELMRegressor
+    When I fit the pipeline and the model
     Then I compute the score in train and test sets 
     And the results are very good
 
@@ -18,7 +18,7 @@ Feature: Fit and validate an OSELMRegressor model with input data
     Given the dataset 'california'
     And a pre-processing pipeline
     And an OSELMRegressor model
-    When I fit the pipeline and the OSELMRegressor
+    When I fit the pipeline and the model
     Then I compute the score in train and test sets 
     And the results are good enough
 
@@ -26,22 +26,36 @@ Feature: Fit and validate an OSELMRegressor model with input data
   Scenario: Fit an OSELMClassifier with toy data (easy)
     Given the dataset 'iris'
     And a pre-processing pipeline
-    And a model
+    And an OSELMClassifier model
     When I fit the pipeline and the model
     Then I compute the score in train and test sets 
     And the results are very good
 
-  # TODO: real data (hard)
-
   @classification @oselm
-  Scenario: Fit an OSELMRegressor with toy data in online fashion (easy)
+  Scenario: Fit an OSELMClassifier with real data (hard)
+    Given the dataset 'covertype'
+    And a pre-processing pipeline
+    And an OSELMClassifier model
+    When I fit the pipeline and the model
+    Then I compute the score in train and test sets
+    And the results are good enough
+
+  @regression @oselm
+  Scenario: Fit an OSELMRegressor with toy data in online fashion, row by row
     Given the dataset 'boston'
     And a pre-processing pipeline
     And an OSELMRegressor model
-    # TODO: set chunk size
-    When I fit the pipeline and the OSELMRegressor in online fashion
-    Then I compute the score in train and test sets 
+    When I fit the pipeline and the model in online fashion, row by row,
+    Then I compute the score in train and test sets
     And the results are good enough
 
-  # TODO: Scenario: Predict
+  @regression @oselm
+  Scenario: Fit an OSELMRegressor with toy data in online fashion, chunk by chunk
+    Given the dataset 'boston'
+    And a pre-processing pipeline
+    And an OSELMRegressor model
+    When I fit the pipeline and the model in online fashion, chunk by chunk,
+    Then I compute the score in train and test sets
+    And the results are good enough
+
 
