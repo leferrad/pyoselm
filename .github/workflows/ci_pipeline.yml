@@ -2,9 +2,9 @@ name: CI Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   build:
@@ -28,3 +28,4 @@ jobs:
     - name: Run Tests
       run: |
         pytest --cov=pyoselm --cov-report=term --cov-report=xml --cov-report=html:tests/coverage -m "not expensive" tests/unit
+        codecov

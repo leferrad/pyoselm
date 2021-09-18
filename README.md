@@ -2,7 +2,7 @@
 
 *A Python implementation of Online Sequential Extreme Machine Learning (OS-ELM) for online machine learning*
 
-[![Build Status](https://travis-ci.org/leferrad/pyoselm.svg?branch=master)](https://travis-ci.org/leferrad/pyoselm)
+[![CI Pipeline](https://github.com/leferrad/pyoselm/actions/workflows/ci_pipeline.yml/badge.svg)](https://github.com/leferrad/pyoselm/actions/workflows/ci_pipeline.yml)
 [![Documentation Status](http://readthedocs.org/projects/pyoselm/badge/?version=latest)](http://pyoselm.readthedocs.io/?badge=latest)
 [![Coverage Status](https://codecov.io/gh/leferrad/pyoselm/branch/master/graph/badge.svg)](https://codecov.io/gh/leferrad/pyoselm)
 
