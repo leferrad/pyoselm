@@ -7,13 +7,16 @@ setup(
     author="Leandro Ferrado",
     author_email="leferrad@gmail.com",
     url="https://github.com/leferrad/pyoselm",
-    packages=find_packages(exclude=['examples', 'tests']),
+    packages=find_packages(exclude=['tests']),
     license="Apache License 2.0",
     description="A Python implementation of "
                 "Online Sequential Extreme Machine Learning (OS-ELM) "
                 "for online machine learning",
-    long_description=open("README.md").read(),
-    install_requires=open("requirements.txt").read().split(),
+    install_requires=[
+        "numpy>=1.5",
+        "scipy>=0.19",
+        "scikit-learn>=0.16",
+    ],
     extras_require={
         'tests': [
             'pytest==6.0.1',
@@ -26,8 +29,5 @@ setup(
             'sphinx-rtd-theme==0.5.0',
             'msmb_theme==1.2.0',
         ],
-        'examples': [
-
-        ]
     }
 )
