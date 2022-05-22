@@ -163,7 +163,7 @@ Here the test results for ELM are slightly better than SVC.
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=123)
 
     models = {
-        "elm": ELMClassifier(n_hidden=400, rbf_width=0.2, activation_func='sigmoid', random_state=123),
+        "elm": ELMClassifier(n_hidden=400, activation_func='sigmoid', random_state=123),
         "svc": SVC(),
         "extra_tree": ExtraTreeClassifier(max_depth=12, random_state=123)
     }
