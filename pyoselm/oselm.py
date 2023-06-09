@@ -65,7 +65,7 @@ class OSELMRegressor(BaseEstimator, RegressorMixin):
     `activation_func` : {callable, string} optional (default='sigmoid')
         Function used to transform input activation
 
-        It must be one of 'tanh', 'sine', 'tribas', 'inv_tribase', 'sigmoid',
+        It must be one of 'tanh', 'sine', 'tribas', 'inv_tribas', 'sigmoid',
         'hardlim', 'softlim', 'gaussian', 'multiquadric', 'inv_multiquadric' or
         a callable.  If none is given, 'tanh' will be used. If a callable
         is given, it will be used to compute the hidden unit activations.
@@ -287,7 +287,7 @@ class OSELMClassifier(OSELMRegressor):
     `activation_func` : {callable, string} optional (default='sigmoid')
         Function used to transform input activation
 
-        It must be one of 'tanh', 'sine', 'tribas', 'inv_tribase', 'sigmoid',
+        It must be one of 'tanh', 'sine', 'tribas', 'inv_tribas', 'sigmoid',
         'hardlim', 'softlim', 'gaussian', 'multiquadric', 'inv_multiquadric' or
         a callable.  If none is given, 'tanh' will be used. If a callable
         is given, it will be used to compute the hidden unit activations.
