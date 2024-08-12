@@ -30,6 +30,7 @@ __all__ = [
 
 class BaseELM(BaseEstimator):
     """Abstract Base class for ELMs"""
+
     __metaclass__ = ABCMeta
 
     def __init__(self, hidden_layer, regressor):
@@ -199,7 +200,7 @@ class GenELMClassifier(BaseELM, ClassifierMixin):
         (default=MLPRandomLayer(random_state=0))
 
     `binarizer`    : LabelBinarizer, optional
-        (default=sklearn.preprocessing.LabelBinarizer(-1, 1))
+        (default=sklearn.preprocessing.LabelBinarizer(neg_label=-1, pos_label=1))
 
     `regressor`    : regressor instance, optional
         (default=LinearRegression())
@@ -218,6 +219,7 @@ class GenELMClassifier(BaseELM, ClassifierMixin):
     --------
     GenELMRegressor, ELMClassifier, MLPRandomLayer
     """
+
     def __init__(self, hidden_layer=None, binarizer=None, regressor=None):
 
         # Default values
@@ -393,15 +395,17 @@ class ELMRegressor(BaseEstimator, RegressorMixin):
               2006.
     """
 
-    def __init__(self,
-                 n_hidden=20,
-                 alpha=0.5,
-                 rbf_width=1.0,
-                 activation_func='sigmoid',
-                 activation_args=None,
-                 user_components=None,
-                 regressor=None,
-                 random_state=None,):
+    def __init__(
+        self,
+        n_hidden=20,
+        alpha=0.5,
+        rbf_width=1.0,
+        activation_func="sigmoid",
+        activation_args=None,
+        user_components=None,
+        regressor=None,
+        random_state=None,
+    ):
 
         self.n_hidden = n_hidden
         self.alpha = alpha
@@ -420,12 +424,15 @@ class ELMRegressor(BaseEstimator, RegressorMixin):
     def _create_random_layer(self):
         """Pass init params to RandomLayer"""
 
-        return RandomLayer(n_hidden=self.n_hidden,
-                           alpha=self.alpha, random_state=self.random_state,
-                           activation_func=self.activation_func,
-                           activation_args=self.activation_args,
-                           user_components=self.user_components,
-                           rbf_width=self.rbf_width)
+        return RandomLayer(
+            n_hidden=self.n_hidden,
+            alpha=self.alpha,
+            random_state=self.random_state,
+            activation_func=self.activation_func,
+            activation_args=self.activation_args,
+            user_components=self.user_components,
+            rbf_width=self.rbf_width,
+        )
 
     def fit(self, X, y):
         """
@@ -448,8 +455,9 @@ class ELMRegressor(BaseEstimator, RegressorMixin):
             Returns an instance of self.
         """
         rhl = self._create_random_layer()
-        self._genelm_regressor = GenELMRegressor(hidden_layer=rhl,
-                                                 regressor=self.regressor)
+        self._genelm_regressor = GenELMRegressor(
+            hidden_layer=rhl, regressor=self.regressor
+        )
         self._genelm_regressor.fit(X, y)
         return self
 
@@ -550,25 +558,29 @@ class ELMClassifier(ELMRegressor):
               2006.
     """
 
-    def __init__(self,
-                 n_hidden=20,
-                 alpha=0.5,
-                 rbf_width=1.0,
-                 activation_func='sigmoid',
-                 activation_args=None,
-                 user_components=None,
-                 regressor=None,
-                 binarizer=LabelBinarizer(neg_label=-1, pos_label=1),
-                 random_state=None,):
+    def __init__(
+        self,
+        n_hidden=20,
+        alpha=0.5,
+        rbf_width=1.0,
+        activation_func="sigmoid",
+        activation_args=None,
+        user_components=None,
+        regressor=None,
+        binarizer=LabelBinarizer(neg_label=-1, pos_label=1),
+        random_state=None,
+    ):
 
-        super(ELMClassifier, self).__init__(n_hidden=n_hidden,
-                                            alpha=alpha,
-                                            random_state=random_state,
-                                            activation_func=activation_func,
-                                            activation_args=activation_args,
-                                            user_components=user_components,
-                                            rbf_width=rbf_width,
-                                            regressor=regressor)
+        super(ELMClassifier, self).__init__(
+            n_hidden=n_hidden,
+            alpha=alpha,
+            random_state=random_state,
+            activation_func=activation_func,
+            activation_args=activation_args,
+            user_components=user_components,
+            rbf_width=rbf_width,
+            regressor=regressor,
+        )
 
         self.classes_ = None
         self.binarizer = binarizer

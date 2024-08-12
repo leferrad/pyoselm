@@ -9,27 +9,40 @@ from pyoselm import layer
 
 
 @pytest.mark.parametrize("n_hidden", [10, 100, 1000])
-@pytest.mark.parametrize("activation_func", ["tanh", "sine", "tribas",
-                                             "inv_tribas", "linear",
-                                             "relu", "softplus", "sigmoid",
-                                             "softlim", "hardlim", "gaussian",
-                                             "multiquadric",
-                                             "inv_multiquadric"])
+@pytest.mark.parametrize(
+    "activation_func",
+    [
+        "tanh",
+        "sine",
+        "tribas",
+        "inv_tribas",
+        "linear",
+        "relu",
+        "softplus",
+        "sigmoid",
+        "softlim",
+        "hardlim",
+        "gaussian",
+        "multiquadric",
+        "inv_multiquadric",
+    ],
+)
 def test_random_layer(n_hidden, activation_func):
     # get data
     X, y = make_regression(n_samples=100, n_targets=1, n_features=10)
 
     # build layer
-    ly = layer.RandomLayer(n_hidden=n_hidden,
-                           activation_func=activation_func)
+    ly = layer.RandomLayer(n_hidden=n_hidden, activation_func=activation_func)
 
     # fit layer
     ly.fit(X, y)
 
     # transform
     X_ = ly.transform(X)
-    assert X_.shape == (X.shape[0], n_hidden), \
-        "Transform output must be (n_input, n_hidden)"
+    assert X_.shape == (
+        X.shape[0],
+        n_hidden,
+    ), "Transform output must be (n_input, n_hidden)"
 
 
 @pytest.mark.parametrize("n_hidden", [10, 100, 1000])
@@ -45,8 +58,10 @@ def test_grbfrandom_layer(n_hidden):
 
     # transform
     X_ = ly.transform(X)
-    assert X_.shape == (X.shape[0], n_hidden), \
-        "Transform output must be (n_input, n_hidden)"
+    assert X_.shape == (
+        X.shape[0],
+        n_hidden,
+    ), "Transform output must be (n_input, n_hidden)"
 
 
 @pytest.mark.parametrize("n_hidden", [10, 100, 1000])
@@ -65,8 +80,10 @@ def test_random_layer_sparse(n_hidden):
 
     # transform
     X_ = ly.transform(X)
-    assert X_.shape == (X.shape[0], n_hidden), \
-        "Transform output must be (n_input, n_hidden)"
+    assert X_.shape == (
+        X.shape[0],
+        n_hidden,
+    ), "Transform output must be (n_input, n_hidden)"
 
 
 @pytest.mark.parametrize("n_hidden", [10, 100, 1000])
@@ -83,26 +100,38 @@ def test_random_layer_custom_activation_func(n_hidden):
         return np.log(1.0 + np.exp(z))
 
     # build layer
-    ly = layer.RandomLayer(n_hidden=n_hidden,
-                           activation_func=softplus)
+    ly = layer.RandomLayer(n_hidden=n_hidden, activation_func=softplus)
 
     # fit layer
     ly.fit(X, y)
 
     # transform
     X_ = ly.transform(X)
-    assert X_.shape == (X.shape[0], n_hidden), \
-        "Transform output must be (n_input, n_hidden)"
+    assert X_.shape == (
+        X.shape[0],
+        n_hidden,
+    ), "Transform output must be (n_input, n_hidden)"
 
 
 def test_random_layer_activation_func_names():
     ly = layer.RandomLayer()
 
     names = ly.activation_func_names()
-    assert set(names) == {'sine', 'tanh', 'tribas', 'inv_tribas', 'linear',
-                          'relu', 'softplus', 'sigmoid', 'softlim',
-                          'hardlim', 'gaussian', 'multiquadric',
-                          'inv_multiquadric'}
+    assert set(names) == {
+        "sine",
+        "tanh",
+        "tribas",
+        "inv_tribas",
+        "linear",
+        "relu",
+        "softplus",
+        "sigmoid",
+        "softlim",
+        "hardlim",
+        "gaussian",
+        "multiquadric",
+        "inv_multiquadric",
+    }
 
 
 def test_random_layer_reproducible_results():
@@ -127,8 +156,9 @@ def test_random_layer_reproducible_results():
     # transform 2
     X2 = ly2.transform(X)
 
-    assert all([(x1 == x2).all() for x1, x2 in zip(X1, X2)]), \
-        "Results must be deterministic if random_state is not None"
+    assert all(
+        [(x1 == x2).all() for x1, x2 in zip(X1, X2)]
+    ), "Results must be deterministic if random_state is not None"
 
 
 def test_random_layer_random_state_different():
@@ -153,8 +183,9 @@ def test_random_layer_random_state_different():
     # transform 2
     X2 = ly2.transform(X)
 
-    assert not all([(x1 == x2).all() for x1, x2 in zip(X1, X2)]), \
-        "Results must be different if random_state changes"
+    assert not all(
+        [(x1 == x2).all() for x1, x2 in zip(X1, X2)]
+    ), "Results must be different if random_state changes"
 
 
 def test_random_layer_bad_path():

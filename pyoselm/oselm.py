@@ -9,7 +9,7 @@
 import warnings
 
 import numpy as np
-from scipy.linalg import pinv2
+from scipy.linalg import pinv
 from scipy.sparse import eye
 from scipy.special import softmax
 from sklearn.base import RegressorMixin, BaseEstimator
@@ -102,12 +102,15 @@ class OSELMRegressor(BaseEstimator, RegressorMixin):
               2006.
 
     """
-    def __init__(self,
-                 n_hidden=20,
-                 activation_func='sigmoid',
-                 activation_args=None,
-                 use_woodbury=False,
-                 random_state=123,):
+
+    def __init__(
+        self,
+        n_hidden=20,
+        activation_func="sigmoid",
+        activation_args=None,
+        use_woodbury=False,
+        random_state=123,
+    ):
         self.n_hidden = n_hidden
         self.random_state = random_state
         self.activation_func = activation_func
@@ -120,10 +123,12 @@ class OSELMRegressor(BaseEstimator, RegressorMixin):
     def _create_random_layer(self):
         """Pass init params to MLPRandomLayer"""
 
-        return MLPRandomLayer(n_hidden=self.n_hidden,
-                              random_state=self.random_state,
-                              activation_func=self.activation_func,
-                              activation_args=self.activation_args)
+        return MLPRandomLayer(
+            n_hidden=self.n_hidden,
+            random_state=self.random_state,
+            activation_func=self.activation_func,
+            activation_args=self.activation_args,
+        )
 
     def _fit_woodbury(self, X, y):
         """Compute learning step using Woodbury formula"""
@@ -134,18 +139,22 @@ class OSELMRegressor(BaseEstimator, RegressorMixin):
         if self.beta is None:
             # this is the first time the model is fitted
             if len(X) < self.n_hidden:
-                raise ValueError("The first time the model is fitted, "
-                                 "X must have at least equal number of "
-                                 "samples than n_hidden value!")
-            self.P = pinv2(safe_sparse_dot(H.T, H))
+                raise ValueError(
+                    "The first time the model is fitted, "
+                    "X must have at least equal number of "
+                    "samples than n_hidden value!"
+                )
+            self.P = pinv(safe_sparse_dot(H.T, H))
             self.beta = multiple_safe_sparse_dot(self.P, H.T, y)
         else:
             if len(H) > 10e3:
-                warnings.warn("Large input of %i rows and use_woodbury=True "\
-                              "may throw OOM errors" % len(H))
+                warnings.warn(
+                    "Large input of %i rows and use_woodbury=True "
+                    "may throw OOM errors" % len(H)
+                )
 
             M = eye(len(H)) + multiple_safe_sparse_dot(H, self.P, H.T)
-            self.P -= multiple_safe_sparse_dot(self.P, H.T, pinv2(M), H, self.P)
+            self.P -= multiple_safe_sparse_dot(self.P, H.T, pinv(M), H, self.P)
             e = y - safe_sparse_dot(H, self.beta)
             self.beta += multiple_safe_sparse_dot(self.P, H.T, e)
 
@@ -158,16 +167,18 @@ class OSELMRegressor(BaseEstimator, RegressorMixin):
         if self.beta is None:
             # this is the first time the model is fitted
             if len(X) < self.n_hidden:
-                raise ValueError("The first time the model is fitted, "
-                                 "X must have at least equal number of "
-                                 "samples than n_hidden value!")
+                raise ValueError(
+                    "The first time the model is fitted, "
+                    "X must have at least equal number of "
+                    "samples than n_hidden value!"
+                )
 
             self.P = safe_sparse_dot(H.T, H)
-            P_inv = pinv2(self.P)
+            P_inv = pinv(self.P)
             self.beta = multiple_safe_sparse_dot(P_inv, H.T, y)
         else:
             self.P += safe_sparse_dot(H.T, H)
-            P_inv = pinv2(self.P)
+            P_inv = pinv(self.P)
             e = y - safe_sparse_dot(H, self.beta)
             self.beta = self.beta + multiple_safe_sparse_dot(P_inv, H.T, e)
 
@@ -176,7 +187,7 @@ class OSELMRegressor(BaseEstimator, RegressorMixin):
         Fit the model using X, y as training data.
 
         Notice that this function could be used for n_samples==1 (online learning),
-        except for the first time the model is fitted, where it needs at least as 
+        except for the first time the model is fitted, where it needs at least as
         many rows as 'n_hidden' configured.
 
         Parameters
@@ -316,19 +327,23 @@ class OSELMClassifier(OSELMRegressor):
               2006.
     """
 
-    def __init__(self,
-                 n_hidden=20,
-                 activation_func='sigmoid',
-                 activation_args=None,
-                 binarizer=LabelBinarizer(neg_label=-1, pos_label=1),
-                 use_woodbury=False,
-                 random_state=123):
+    def __init__(
+        self,
+        n_hidden=20,
+        activation_func="sigmoid",
+        activation_args=None,
+        binarizer=LabelBinarizer(neg_label=-1, pos_label=1),
+        use_woodbury=False,
+        random_state=123,
+    ):
 
-        super(OSELMClassifier, self).__init__(n_hidden=n_hidden,
-                                              random_state=random_state,
-                                              activation_func=activation_func,
-                                              activation_args=activation_args,
-                                              use_woodbury=use_woodbury)
+        super(OSELMClassifier, self).__init__(
+            n_hidden=n_hidden,
+            random_state=random_state,
+            activation_func=activation_func,
+            activation_args=activation_args,
+            use_woodbury=use_woodbury,
+        )
         self.classes_ = None
         self.binarizer = binarizer
 
@@ -399,7 +414,7 @@ class OSELMClassifier(OSELMRegressor):
         class_predictions = self.binarizer.inverse_transform(raw_predictions)
 
         return class_predictions
-    
+
     def predict_proba(self, X):
         """
         Predict probability values using the model

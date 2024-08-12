@@ -3,7 +3,7 @@ from setuptools import find_packages
 
 setup(
     name="pyoselm",
-    version="1.0.1",
+    version="1.1.0",
     author="Leandro Ferrado",
     author_email="leferrad@gmail.com",
     url="https://github.com/leferrad/pyoselm",
