@@ -15,9 +15,8 @@ import scipy.sparse as sp
 from scipy.spatial.distance import cdist, pdist, squareform
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.metrics import pairwise_distances
-from sklearn.utils import check_random_state, check_array
+from sklearn.utils import check_array, check_random_state
 from sklearn.utils.extmath import safe_sparse_dot
-
 
 __all__ = [
     "RandomLayer",

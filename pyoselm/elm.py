@@ -17,8 +17,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import LabelBinarizer
 from sklearn.utils import as_float_array
 
-from pyoselm.layer import RandomLayer, MLPRandomLayer
-
+from pyoselm.layer import MLPRandomLayer, RandomLayer
 
 __all__ = [
     "ELMRegressor",

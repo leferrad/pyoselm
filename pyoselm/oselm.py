@@ -12,14 +12,13 @@ import numpy as np
 from scipy.linalg import pinv
 from scipy.sparse import eye
 from scipy.special import softmax
-from sklearn.base import RegressorMixin, BaseEstimator
+from sklearn.base import BaseEstimator, RegressorMixin
 from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import LabelBinarizer
 from sklearn.utils import as_float_array
 from sklearn.utils.extmath import safe_sparse_dot
 
 from pyoselm.layer import MLPRandomLayer
-
 
 __all__ = [
     "OSELMRegressor",

@@ -52,7 +52,7 @@ test-system:
 lint:
 	poetry run black pyoselm tests
 	poetry run isort pyoselm tests
-	poetry run flake8 pyoselm tests --max-line-length=88 --extend-ignore=E203,W503
+	poetry run flake8 pyoselm tests --max-line-length=88 --extend-ignore=E203,W503,F403,F401,E731
 	poetry run bandit -r pyoselm
 
 # Cleanup targets

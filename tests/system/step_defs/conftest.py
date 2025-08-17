@@ -1,16 +1,15 @@
 """Steps that are shared between scenarios"""
 
 import pytest
-from pytest_bdd import given, when, then, parsers
+from pytest_bdd import given, parsers, then, when
 
 from .utils.loaders import (
+    Results,
     load_dataset,
-    load_pipeline,
     load_elm_model,
     load_oselm_model,
-    Results,
+    load_pipeline,
 )
-
 
 # Global variables to store state between steps
 _test_context = {}
@@ -19,7 +18,6 @@ _test_context = {}
 @pytest.fixture(autouse=True)
 def clear_test_context():
     """Clear test context before each test"""
-    global _test_context
     _test_context.clear()
     yield
     _test_context.clear()
