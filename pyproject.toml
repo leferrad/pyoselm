@@ -1,0 +1,87 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyoselm"
+version = "1.1.0"
+authors = [
+    {name = "Leandro Ferrado", email = "leferrad@gmail.com"},
+]
+description = "A Python implementation of Online Sequential Extreme Machine Learning (OS-ELM) for online machine learning"
+readme = "README.md"
+license = {text = "Apache-2.0"}
+requires-python = ">=3.7"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+keywords = [
+    "machine learning",
+    "online learning",
+    "extreme learning machine",
+    "ELM",
+    "OS-ELM",
+    "neural networks",
+    "regression",
+    "classification",
+    "scikit-learn",
+]
+dependencies = [
+    "numpy>=1.19.0",
+    "scipy>=1.5.0",
+    "scikit-learn>=0.24.0",
+]
+
+[project.optional-dependencies]
+tests = [
+    "pytest>=6.0.1",
+    "pytest-pep8>=1.0.6",
+    "pytest-cov>=2.10.1",
+    "pytest-bdd>=3.4.0",
+]
+docs = [
+    "sphinx>=3.2.1",
+    "sphinx-rtd-theme>=0.5.0",
+    "msmb_theme>=1.2.0",
+]
+dev = [
+    "pytest>=6.0.1",
+    "pytest-pep8>=1.0.6",
+    "pytest-cov>=2.10.1",
+    "pytest-bdd>=3.4.0",
+    "sphinx>=3.2.1",
+    "sphinx-rtd-theme>=0.5.0",
+    "msmb_theme>=1.2.0",
+    "build",
+    "twine",
+    "black>=22.0.0",
+    "isort>=5.10.0",
+    "flake8>=4.0.0",
+    "bandit>=1.7.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/leferrad/pyoselm"
+Documentation = "http://pyoselm.readthedocs.io/"
+Repository = "https://github.com/leferrad/pyoselm"
+"Bug Tracker" = "https://github.com/leferrad/pyoselm/issues"
+
+[tool.setuptools.packages.find]
+exclude = ["tests*"]
+
+[tool.setuptools.package-data]
+pyoselm = ["py.typed"]
