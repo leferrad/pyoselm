@@ -72,10 +72,20 @@ build: clean
 	poetry build
 
 publish-test: build
+	@echo "Configuring TestPyPI repository..."
+	poetry config repositories.testpypi https://test.pypi.org/legacy/
+	@echo "Publishing to TestPyPI..."
 	poetry publish --repository testpypi
+	@echo ""
+	@echo "Package uploaded to TestPyPI!"
+	@echo "Install with: pip install --index-url https://test.pypi.org/simple/ pyoselm"
 
 publish: build
+	@echo "Publishing to PyPI..."
 	poetry publish
+	@echo ""
+	@echo "Package uploaded to PyPI!"
+	@echo "Install with: pip install pyoselm"
 
 # Documentation targets
 docs:
