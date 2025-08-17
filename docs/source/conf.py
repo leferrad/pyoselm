@@ -1,5 +1,8 @@
-import pkg_resources
 import os
+import sys
+
+# Add the project root to the path so we can import pyoselm
+sys.path.insert(0, os.path.abspath('../../'))
 
 # -- Project information -----------------------------------------------------
 
@@ -7,7 +10,13 @@ project = 'pyoselm'
 copyright = '2018-2025, Leandro Ferrado'
 author = 'leferrad'
 
-__version__ = pkg_resources.get_distribution('pyoselm').version
+# Get version from pyoselm package
+try:
+    import pyoselm
+    __version__ = pyoselm.__version__
+except ImportError:
+    # Fallback version if package not installed
+    __version__ = '1.2.0'
 
 # The short X.Y version
 version = __version__
