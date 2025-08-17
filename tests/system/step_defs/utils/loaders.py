@@ -5,11 +5,10 @@ from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
-from pyoselm import ELMRegressor, OSELMRegressor, ELMClassifier, OSELMClassifier
+from pyoselm import ELMClassifier, ELMRegressor, OSELMClassifier, OSELMRegressor
 
 # Datasets to use for tests
 AVAILABLE_DATASETS = {
-    "boston": datasets.load_boston,  # regression
     "california": datasets.fetch_california_housing,  # regression
     "iris": datasets.load_iris,  # classification
     "covertype": datasets.fetch_covtype,  # classification
@@ -17,32 +16,41 @@ AVAILABLE_DATASETS = {
 
 # Pipelines to use for tests
 AVAILABLE_PIPELINES = {
-    "boston": lambda: Pipeline([("scaler", StandardScaler())]),
     "california": lambda: Pipeline([("scaler", StandardScaler())]),
-    "iris": lambda: Pipeline([("scaler", StandardScaler())]), 
+    "iris": lambda: Pipeline([("scaler", StandardScaler())]),
     "covertype": lambda: Pipeline([("scaler", StandardScaler())]),
 }
 
 # Models from pyoselm.elm to use for tests
 AVAILABLE_ELM_MODELS = {
-    "boston": lambda: ELMRegressor(n_hidden=50, activation_func="sigmoid", random_state=123),
-    "california": lambda: ELMRegressor(n_hidden=50, activation_func="sigmoid", random_state=123),
-    "iris": lambda: ELMClassifier(n_hidden=20, activation_func="sigmoid", random_state=123),
-    "covertype": lambda: ELMClassifier(n_hidden=50, activation_func="sigmoid", random_state=123),
+    "california": lambda: ELMRegressor(
+        n_hidden=50, activation_func="sigmoid", random_state=123
+    ),
+    "iris": lambda: ELMClassifier(
+        n_hidden=20, activation_func="sigmoid", random_state=123
+    ),
+    "covertype": lambda: ELMClassifier(
+        n_hidden=50, activation_func="sigmoid", random_state=123
+    ),
 }
 
 # Models from pyoselm.oselm to use for tests
 AVAILABLE_OSELM_MODELS = {
-    "boston": lambda: OSELMRegressor(n_hidden=70, activation_func="sigmoid", random_state=123),
-    "california": lambda: OSELMRegressor(n_hidden=50, activation_func="sigmoid", random_state=123),
-    "iris": lambda: OSELMClassifier(n_hidden=20, activation_func="sigmoid", random_state=123),
-    "covertype": lambda: OSELMClassifier(n_hidden=50, activation_func="sigmoid", random_state=123),
+    "california": lambda: OSELMRegressor(
+        n_hidden=50, activation_func="sigmoid", random_state=123
+    ),
+    "iris": lambda: OSELMClassifier(
+        n_hidden=20, activation_func="sigmoid", random_state=123
+    ),
+    "covertype": lambda: OSELMClassifier(
+        n_hidden=50, activation_func="sigmoid", random_state=123
+    ),
 }
 
 
 class Dataset:
     """
-    Util to store a dataset for tests. 
+    Util to store a dataset for tests.
     It splits data in train and test sets for cross validation.
 
     Args:
@@ -51,11 +59,12 @@ class Dataset:
         y (np.array): target
         test_size (float, optional): Ratio for test set. Defaults to 0.3.
     """
+
     def __init__(self, name, X, y, test_size=0.3):
         self.name = name
-        X_train, X_test, y_train, y_test = train_test_split(X, y,
-                                                            test_size=test_size,
-                                                            random_state=123)
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=test_size, random_state=123
+        )
         self.X_train = X_train
         self.X_test = X_test
         self.y_train = y_train

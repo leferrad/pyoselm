@@ -15,10 +15,12 @@
    
       ~GenELMRegressor.__init__
       ~GenELMRegressor.fit
+      ~GenELMRegressor.get_metadata_routing
       ~GenELMRegressor.get_params
       ~GenELMRegressor.predict
       ~GenELMRegressor.score
       ~GenELMRegressor.set_params
+      ~GenELMRegressor.set_score_request
    
    
 

@@ -6,7 +6,7 @@ Feature: Fit and validate an OSELMRegressor model with input data
 
   @regression @oselm
   Scenario: Fit an OSELMRegressor with toy data (easy)
-    Given the dataset 'boston'
+    Given the dataset 'california'
     And a pre-processing pipeline
     And an OSELMRegressor model
     When I fit the pipeline and the model
@@ -42,7 +42,7 @@ Feature: Fit and validate an OSELMRegressor model with input data
 
   @regression @oselm @expensive
   Scenario: Fit an OSELMRegressor with toy data in online fashion, row by row
-    Given the dataset 'boston'
+    Given the dataset 'california'
     And a pre-processing pipeline
     And an OSELMRegressor model
     When I fit the pipeline and the model in online fashion, row by row,
@@ -51,7 +51,7 @@ Feature: Fit and validate an OSELMRegressor model with input data
 
   @regression @oselm  @expensive
   Scenario: Fit an OSELMRegressor with toy data in online fashion, chunk by chunk
-    Given the dataset 'boston'
+    Given the dataset 'california'
     And a pre-processing pipeline
     And an OSELMRegressor model
     When I fit the pipeline and the model in online fashion, chunk by chunk,

@@ -17,7 +17,9 @@
       ~RandomLayer.activation_func_names
       ~RandomLayer.fit
       ~RandomLayer.fit_transform
+      ~RandomLayer.get_metadata_routing
       ~RandomLayer.get_params
+      ~RandomLayer.set_output
       ~RandomLayer.set_params
       ~RandomLayer.transform
    

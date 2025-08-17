@@ -5,7 +5,7 @@ from sklearn.datasets import load_digits, make_regression
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import LabelBinarizer
 
-from pyoselm.elm import GenELMRegressor, GenELMClassifier, ELMRegressor, ELMClassifier
+from pyoselm.elm import ELMClassifier, ELMRegressor, GenELMClassifier, GenELMRegressor
 from pyoselm.layer import RBFRandomLayer
 
 

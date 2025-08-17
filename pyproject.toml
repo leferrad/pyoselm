@@ -1,0 +1,97 @@
+[tool.poetry]
+name = "pyoselm"
+version = "1.2.0"
+description = "A Python implementation of Online Sequential Extreme Machine Learning (OS-ELM) for online machine learning"
+authors = ["Leandro Ferrado <leferrad@gmail.com>"]
+readme = "README.md"
+license = "Apache-2.0"
+homepage = "https://github.com/leferrad/pyoselm"
+repository = "https://github.com/leferrad/pyoselm"
+documentation = "http://pyoselm.readthedocs.io/"
+keywords = [
+    "machine learning",
+    "online learning",
+    "extreme learning machine",
+    "ELM",
+    "OS-ELM",
+    "neural networks",
+    "regression",
+    "classification",
+    "scikit-learn",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+packages = [{include = "pyoselm"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+numpy = "^2.2.6"
+scipy = "^1.14.1"
+scikit-learn = "^1.7.1"
+
+[tool.poetry.group.test.dependencies]
+pytest = "^8.4.1"
+pytest-pep8 = "^1.0.6"
+pytest-cov = "^6.2.1"
+pytest-bdd = "^8.1.0"
+
+[tool.poetry.group.docs.dependencies]
+sphinx = "^7.4.7"
+sphinx-rtd-theme = "^3.0.2"
+tomli = {version = "^2.0.0", markers = "python_version < '3.11'"}
+
+[tool.poetry.group.dev.dependencies]
+black = "^25.1.0"
+isort = "^6.0.1"
+flake8 = "^7.3.0"
+bandit = "^1.8.6"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+target-version = ['py39']
+
+[tool.isort]
+profile = "black"
+line_length = 88
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+markers = [
+    "regression: marks tests as regression tests",
+    "classification: marks tests as classification tests",
+    "elm: marks tests as ELM tests",
+    "oselm: marks tests as OS-ELM tests",
+    "expensive: marks tests as expensive/slow tests",
+]
+
+[tool.coverage.run]
+source = ["pyoselm"]
+omit = ["tests/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+]

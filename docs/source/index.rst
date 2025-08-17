@@ -13,6 +13,7 @@ pyoselm: Online Sequential Extreme Machine Learning in Python
    setup
    tutorial
    reference/index
+   changelog
 
 Indices and tables
 ==================

@@ -6,7 +6,7 @@ Feature: Fit and validate an ELMRegressor model with input data
 
   @regression @elm
   Scenario: Fit an ELMRegressor with toy data (easy)
-    Given the dataset 'boston'
+    Given the dataset 'california'
     And a pre-processing pipeline
     And an ELMRegressor model
     When I fit the pipeline and the model

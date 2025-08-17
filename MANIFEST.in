@@ -1,0 +1,20 @@
+# Include the README and LICENSE files
+include README.md
+include LICENSE
+
+# Include the entire docs directory
+recursive-include docs *
+
+# Exclude compiled Python files
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude __pycache__
+
+# Exclude test files from the distribution
+prune tests
+
+# Exclude development files
+exclude .gitignore
+exclude .github
+exclude requirements.txt
+exclude setup.py
