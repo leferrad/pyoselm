@@ -13,7 +13,6 @@ NC='\033[0m' # No Color
 
 # Project root directory
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-VENV_NAME="pyoselm-dev"
 
 echo -e "${BLUE}🚀 PyOSELM Development Environment Setup${NC}"
 echo "Project root: $PROJECT_ROOT"
