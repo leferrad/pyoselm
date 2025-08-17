@@ -1,7 +1,7 @@
 Setup
 =====
 
-``pyoselm`` supports Python 3.6+.
+``pyoselm`` supports Python 3.10+.
 
 Installing
 ----------
@@ -19,16 +19,39 @@ You can also install the development version from master branch of Git repositor
     $ pip install git+https://github.com/leferrad/pyoselm.git
 
 
+Development Setup
+-----------------
+
+For development, this project uses `Poetry <https://python-poetry.org/>`_ for dependency management:
+
+.. code-block:: bash
+
+    # Install Poetry
+    curl -sSL https://install.python-poetry.org | python3 -
+
+    # Install dependencies
+    poetry install
+
+    # Activate environment
+    poetry shell
+
+
 Testing
 -------
 
 Tests are developed using `pytest <https://docs.pytest.org/en/stable/>`_ and its plugins.
 
-To run all tests in ``tests/``, execute:
+To run tests, use the provided make commands:
 
 .. code-block:: bash
 
-    pytest --cov=pyoselm tests/
+    make test           # Unit tests
+    make test-system    # System tests
+    make lint           # Code quality checks
 
-More details in the tests's README.md
+Or run pytest directly:
+
+.. code-block:: bash
+
+    poetry run pytest tests/unit/ -v
 

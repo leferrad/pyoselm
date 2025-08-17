@@ -17,7 +17,9 @@
       ~MLPRandomLayer.activation_func_names
       ~MLPRandomLayer.fit
       ~MLPRandomLayer.fit_transform
+      ~MLPRandomLayer.get_metadata_routing
       ~MLPRandomLayer.get_params
+      ~MLPRandomLayer.set_output
       ~MLPRandomLayer.set_params
       ~MLPRandomLayer.transform
    

@@ -15,10 +15,12 @@
    
       ~ELMRegressor.__init__
       ~ELMRegressor.fit
+      ~ELMRegressor.get_metadata_routing
       ~ELMRegressor.get_params
       ~ELMRegressor.predict
       ~ELMRegressor.score
       ~ELMRegressor.set_params
+      ~ELMRegressor.set_score_request
    
    
 

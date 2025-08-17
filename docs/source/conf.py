@@ -4,7 +4,7 @@ import os
 # -- Project information -----------------------------------------------------
 
 project = 'pyoselm'
-copyright = '2018, Leandro Ferrado'
+copyright = '2018-2025, Leandro Ferrado'
 author = 'leferrad'
 
 __version__ = pkg_resources.get_distribution('pyoselm').version
@@ -53,7 +53,7 @@ master_doc = 'index'
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = 'en'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -108,4 +108,12 @@ autosummary_generate = True
 autodoc_default_options = {
     'members': True,
     'inherited-members': True,
+}
+
+# Intersphinx mapping
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3', None),
+    'numpy': ('https://numpy.org/doc/stable/', None),
+    'scipy': ('https://docs.scipy.org/doc/scipy/', None),
+    'sklearn': ('https://scikit-learn.org/stable/', None),
 }

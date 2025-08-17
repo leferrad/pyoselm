@@ -17,7 +17,9 @@
       ~RBFRandomLayer.activation_func_names
       ~RBFRandomLayer.fit
       ~RBFRandomLayer.fit_transform
+      ~RBFRandomLayer.get_metadata_routing
       ~RBFRandomLayer.get_params
+      ~RBFRandomLayer.set_output
       ~RBFRandomLayer.set_params
       ~RBFRandomLayer.transform
    

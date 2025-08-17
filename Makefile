@@ -79,7 +79,7 @@ publish: build
 
 # Documentation targets
 docs:
-	poetry run sphinx-build -b html docs docs/_build/html
+	poetry run sphinx-build -b html docs/source docs/_build/html
 	@echo "Documentation built in docs/_build/html/"
 
 # Dependency and security checks
