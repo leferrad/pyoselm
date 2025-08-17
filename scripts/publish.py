@@ -32,7 +32,7 @@ def clean_build():
     # Change to project root directory
     project_root = Path(__file__).parent.parent
     os.chdir(project_root)
-    
+
     dirs_to_clean = ["build", "dist", "*.egg-info"]
     for pattern in dirs_to_clean:
         for path in Path(".").glob(pattern):
@@ -69,21 +69,21 @@ def upload_package(test=False):
 def main():
     """Main function."""
     test_mode = "--test" in sys.argv
-    
+
     # Ensure we're in the project root
     project_root = Path(__file__).parent.parent
     os.chdir(project_root)
     print(f"Working from project root: {project_root}")
-    
+
     # Check if required tools are installed
     try:
         run_command("python -m build --help", check=False)
         run_command("python -m twine --help", check=False)
-    except:
+    except subprocess.CalledProcessError:
         print("Please install required tools:")
         print("pip install build twine")
         sys.exit(1)
-    
+
     # Clean, build, and upload
     clean_build()
     build_package()

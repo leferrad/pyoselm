@@ -50,6 +50,7 @@ pytest-bdd = "^8.1.0"
 [tool.poetry.group.docs.dependencies]
 sphinx = "^7.4.7"
 sphinx-rtd-theme = "^3.0.2"
+tomli = {version = "^2.0.0", markers = "python_version < '3.11'"}
 
 [tool.poetry.group.dev.dependencies]
 black = "^25.1.0"
