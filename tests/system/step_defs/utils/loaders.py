@@ -9,7 +9,6 @@ from pyoselm import ELMRegressor, OSELMRegressor, ELMClassifier, OSELMClassifier
 
 # Datasets to use for tests
 AVAILABLE_DATASETS = {
-    "boston": datasets.load_boston,  # regression
     "california": datasets.fetch_california_housing,  # regression
     "iris": datasets.load_iris,  # classification
     "covertype": datasets.fetch_covtype,  # classification
@@ -17,15 +16,13 @@ AVAILABLE_DATASETS = {
 
 # Pipelines to use for tests
 AVAILABLE_PIPELINES = {
-    "boston": lambda: Pipeline([("scaler", StandardScaler())]),
     "california": lambda: Pipeline([("scaler", StandardScaler())]),
-    "iris": lambda: Pipeline([("scaler", StandardScaler())]), 
+    "iris": lambda: Pipeline([("scaler", StandardScaler())]),
     "covertype": lambda: Pipeline([("scaler", StandardScaler())]),
 }
 
 # Models from pyoselm.elm to use for tests
 AVAILABLE_ELM_MODELS = {
-    "boston": lambda: ELMRegressor(n_hidden=50, activation_func="sigmoid", random_state=123),
     "california": lambda: ELMRegressor(n_hidden=50, activation_func="sigmoid", random_state=123),
     "iris": lambda: ELMClassifier(n_hidden=20, activation_func="sigmoid", random_state=123),
     "covertype": lambda: ELMClassifier(n_hidden=50, activation_func="sigmoid", random_state=123),
@@ -33,7 +30,6 @@ AVAILABLE_ELM_MODELS = {
 
 # Models from pyoselm.oselm to use for tests
 AVAILABLE_OSELM_MODELS = {
-    "boston": lambda: OSELMRegressor(n_hidden=70, activation_func="sigmoid", random_state=123),
     "california": lambda: OSELMRegressor(n_hidden=50, activation_func="sigmoid", random_state=123),
     "iris": lambda: OSELMClassifier(n_hidden=20, activation_func="sigmoid", random_state=123),
     "covertype": lambda: OSELMClassifier(n_hidden=50, activation_func="sigmoid", random_state=123),
