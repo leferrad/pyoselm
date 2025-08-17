@@ -70,3 +70,29 @@ for b_x, b_y in zip(batches_x, batches_y):
 print("Train score of total: %s" % str(oselmc.score(X_train, y_train)))
 print("Test score of total: %s" % str(oselmc.score(X_test, y_test)))
 ```
+
+### Development
+
+For development, this project uses [Poetry](https://python-poetry.org/) for dependency management:
+
+```bash
+# Install Poetry
+curl -sSL https://install.python-poetry.org | python3 -
+
+# Install dependencies
+poetry install
+
+# Activate environment
+poetry shell
+
+# Run tests
+make test           # Unit tests
+make test-system    # System tests
+
+# Check code quality
+make lint
+```
+
+### License
+
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
