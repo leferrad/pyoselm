@@ -605,16 +605,6 @@ files = [
 ]
 
 [[package]]
-name = "msmb-theme"
-version = "1.2.0"
-description = "Modification to sphinx_rtd_theme"
-optional = false
-python-versions = "*"
-files = [
-    {file = "msmb_theme-1.2.0.tar.gz", hash = "sha256:9bdc2fe3b02af8271489f8d2b5d6b93f4709c7889c62dad6b96d225ca6f4e72c"},
-]
-
-[[package]]
 name = "mypy-extensions"
 version = "1.1.0"
 description = "Type system extensions for programs checked with the mypy type checker."
@@ -1440,4 +1430,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "7159312b1e8006e41cf3cd7303be70ce3d10f859bba7f9d4a0d8406659eba730"
+content-hash = "35e3a97efc5167dedd3b3316d7236f836a125d1b7ab3656bb2f01a9a9966f23d"

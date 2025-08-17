@@ -100,13 +100,8 @@ html_static_path = []
 #
 # html_sidebars = {}
 
-# on_rtd is whether we are on readthedocs.org, this line of code grabbed from docs.readthedocs.org
-on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
-
-if not on_rtd:  # only import and set the theme if we're building docs locally
-    import msmb_theme
-    html_theme = 'msmb_theme'
-    html_theme_path = [msmb_theme.get_html_theme_path()]
+# Use sphinx_rtd_theme for consistent appearance
+html_theme = 'sphinx_rtd_theme'
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.

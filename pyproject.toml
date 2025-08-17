@@ -50,7 +50,6 @@ pytest-bdd = "^8.1.0"
 [tool.poetry.group.docs.dependencies]
 sphinx = "^7.4.7"
 sphinx-rtd-theme = "^3.0.2"
-msmb_theme = "^1.2.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^25.1.0"
